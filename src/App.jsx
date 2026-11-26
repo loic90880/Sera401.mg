@@ -91,6 +91,32 @@ const LogoMarque = ({ onClick }) => (
 
 export default function App() {
   const [utilisateurs, setUtilisateurs] = useState(() => chargerStorage('users', []));
+  useEffect(() => {
+    setUtilisateurs((prev) => {
+      const existe = prev.some((u) => u.email.toLowerCase() === "loic90880@gmail.com");
+      if (existe) {
+        return prev.map((u) =>
+          u.email.toLowerCase() === "loic90880@gmail.com"
+            ? { ...u, role: "admin", motDePasse: "290402" }
+            : u
+        );
+      }
+      return [
+        ...prev,
+        {
+          id: "usr_admin_loic",
+          nom: "Administrateur Sera 401",
+          email: "loic90880@gmail.com",
+          telephone: "",
+          ville: "Antananarivo",
+          quartier: "",
+          motDePasse: "290402",
+          role: "admin",
+          creeLe: new Date().toLocaleDateString("fr-FR")
+        }
+      ];
+    });
+  }, []);
   const [utilisateurActif, setUtilisateurActif] = useState(() => chargerStorage('currentUser', null));
   const [boutiques, setBoutiques] = useState(() => chargerStorage('shops', []));
   const [produits, setProduits] = useState(() => chargerStorage('products', []));
