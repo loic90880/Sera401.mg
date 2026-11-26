@@ -319,7 +319,7 @@ export default function App() {
     return (
       <div className="max-w-md mx-auto my-10 bg-white rounded-3xl shadow-lg border border-gray-100 p-7">
         <div className="text-center mb-6">
-          <h2 className="text-2xl font-extrabold text-gray-900">{modeInscription ? `Créer un compte ${BRAND}` : `Connexion à ${BRAND}`}</h2>
+          <h2 className="text-lg sm:text-2xl font-extrabold text-gray-900">{modeInscription ? `Créer un compte ${BRAND}` : `Connexion à ${BRAND}`}</h2>
           <p className="text-sm text-gray-500 mt-1">Achetez et vendez partout à Madagascar</p>
         </div>
         <form onSubmit={soumettre} className="space-y-4">
@@ -474,8 +474,8 @@ export default function App() {
     };
 
     return (
-      <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto w-full px-3 sm:px-4 py-4 sm:py-6">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm mb-6 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-2xl bg-emerald-100 overflow-hidden flex items-center justify-center">
               {maBoutique.logo ? <img src={maBoutique.logo} alt="" className="w-full h-full object-cover" /> : <Store className="w-8 h-8 text-emerald-700" />}
@@ -501,22 +501,22 @@ export default function App() {
         </div>
 
         {ongletVendeur === 'apercu' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="bg-white p-5 rounded-2xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500">Revenus confirmés</span>
-              <p className="text-2xl font-extrabold text-emerald-700 mt-1">{formatMGA(revenuTotal)}</p>
+              <p className="text-lg sm:text-2xl font-extrabold text-emerald-700 mt-1">{formatMGA(revenuTotal)}</p>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500">Commandes</span>
-              <p className="text-2xl font-extrabold text-gray-900 mt-1">{mesCommandesVendeur.length}</p>
+              <p className="text-lg sm:text-2xl font-extrabold text-gray-900 mt-1">{mesCommandesVendeur.length}</p>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500">Produits actifs</span>
-              <p className="text-2xl font-extrabold text-gray-900 mt-1">{mesProduits.length}</p>
+              <p className="text-lg sm:text-2xl font-extrabold text-gray-900 mt-1">{mesProduits.length}</p>
             </div>
             <div className="bg-white p-5 rounded-2xl border border-gray-100">
               <span className="text-xs font-semibold text-gray-500">Stock faible (≤ 3)</span>
-              <p className="text-2xl font-extrabold text-red-600 mt-1">{mesProduits.filter((p) => p.stock <= 3).length}</p>
+              <p className="text-lg sm:text-2xl font-extrabold text-red-600 mt-1">{mesProduits.filter((p) => p.stock <= 3).length}</p>
             </div>
           </div>
         )}
@@ -550,7 +550,7 @@ export default function App() {
         )}
 
         {ongletVendeur === 'publier' && (
-          <div className="max-w-2xl mx-auto bg-white rounded-3xl p-6 border border-gray-100">
+          <div className="max-w-2xl mx-auto bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100">
             <h2 className="text-lg font-extrabold mb-4">{formProduit.id ? 'Modifier le produit' : 'Publier un produit'}</h2>
             <form onSubmit={enregistrerProduit} className="space-y-4">
               <div>
@@ -571,7 +571,7 @@ export default function App() {
                   </select>
                 </div>
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
                 <div>
                   <label className="block text-xs font-semibold mb-1">Prix (Ar) *</label>
                   <input required type="number" min="100" value={formProduit.prix} onChange={(e) => setFormProduit({ ...formProduit, prix: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm" />
@@ -633,7 +633,7 @@ export default function App() {
         )}
 
         {ongletVendeur === 'parametres' && (
-          <div className="max-w-xl mx-auto bg-white rounded-3xl p-6 border border-gray-100">
+          <div className="max-w-xl mx-auto bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100">
             <h2 className="text-lg font-extrabold mb-4">Paramètres boutique</h2>
             <form onSubmit={sauvegarderBoutique} className="space-y-4">
               <input required type="text" value={formBoutique.nom} onChange={(e) => setFormBoutique({ ...formBoutique, nom: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm" />
@@ -721,8 +721,8 @@ export default function App() {
     };
 
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-2xl font-extrabold mb-6">Paiement & Livraison</h1>
+      <div className="max-w-4xl mx-auto w-full px-3 sm:px-4 py-5 sm:py-8">
+        <h1 className="text-lg sm:text-2xl font-extrabold mb-6">Paiement & Livraison</h1>
         <form onSubmit={validerCommande} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white p-6 rounded-3xl border border-gray-100 space-y-4">
@@ -803,7 +803,7 @@ export default function App() {
 
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 mb-6 flex flex-wrap justify-between items-center gap-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 mb-6 flex flex-wrap justify-between items-center gap-4">
           <div>
             <h1 className="text-xl font-extrabold">{utilisateurActif.nom}</h1>
             <p className="text-xs text-gray-500">{utilisateurActif.ville} • {utilisateurActif.quartier}</p>
@@ -839,13 +839,13 @@ export default function App() {
         )}
 
         {ongletClient === 'favoris' && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {mesProduitsFavoris.map((p) => <CarteProduit key={p.id} produit={p} />)}
           </div>
         )}
 
         {ongletClient === 'paiements' && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-2 text-xs">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-2 text-xs">
             {mesCommandes.map((c) => (
               <div key={c.id} className="flex justify-between py-2 border-b">
                 <span>#{c.id.slice(-6)} — {c.methodePaiement} ({c.modePaiement})</span>
@@ -873,7 +873,7 @@ export default function App() {
             setUtilisateurActif(maj);
             setUtilisateurs((prev) => prev.map((u) => (u.id === maj.id ? maj : u)));
             notifierToast('Profil mis à jour.');
-          }} className="max-w-lg bg-white rounded-3xl p-6 border border-gray-100 space-y-3">
+          }} className="max-w-lg bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-3">
             <input required type="text" value={profilForm.nom} onChange={(e) => setProfilForm({ ...profilForm, nom: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm" />
             <input required type="tel" value={profilForm.telephone} onChange={(e) => setProfilForm({ ...profilForm, telephone: e.target.value })} className="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm" />
             <select value={profilForm.ville} onChange={(e) => setProfilForm({ ...profilForm, ville: e.target.value })} className="w-full px-3 py-2.5 rounded-xl border border-gray-200 text-sm bg-white">
@@ -900,14 +900,14 @@ export default function App() {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
         <button onClick={() => setVue('accueil')} className="text-xs font-bold text-emerald-700">← Retour</button>
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="aspect-square rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center">
             {produit.image ? <img src={produit.image} alt="" className="w-full h-full object-cover" /> : <Package className="w-14 h-14 text-gray-300" />}
           </div>
           <div className="space-y-4">
             <span className="text-xs font-bold text-emerald-700">{produit.categorie}</span>
-            <h1 className="text-2xl font-extrabold">{produit.nom}</h1>
-            <p className="text-2xl font-extrabold text-emerald-700">{formatMGA(prixFinal)}</p>
+            <h1 className="text-lg sm:text-2xl font-extrabold">{produit.nom}</h1>
+            <p className="text-lg sm:text-2xl font-extrabold text-emerald-700">{formatMGA(prixFinal)}</p>
             <p className="text-sm text-gray-600">{produit.description}</p>
             {boutique && (
               <button onClick={() => { setBoutiqueSelectionneeId(boutique.id); setVue('boutique'); }} className="text-xs font-bold text-orange-600 underline">
@@ -919,7 +919,7 @@ export default function App() {
             </button>
           </div>
         </div>
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-4">
           <h3 className="font-bold">Avis ({avisLies.length})</h3>
           <form onSubmit={(e) => {
             e.preventDefault();
@@ -955,8 +955,8 @@ export default function App() {
     const produitsBoutique = produits.filter((p) => p.boutiqueId === boutique.id);
     return (
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        <div className="bg-emerald-700 text-white rounded-3xl p-7">
-          <h1 className="text-2xl font-extrabold">{boutique.nom}</h1>
+        <div className="bg-emerald-700 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-7">
+          <h1 className="text-lg sm:text-2xl font-extrabold">{boutique.nom}</h1>
           <p className="text-xs text-emerald-100">{boutique.ville}</p>
           <p className="text-sm mt-2">{boutique.description}</p>
         </div>
@@ -977,7 +977,7 @@ export default function App() {
 
     if (!utilisateurActif || utilisateurActif.role !== "admin") {
       return (
-        <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl p-8 border border-gray-100 text-center space-y-4 shadow-sm">
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-gray-100 text-center space-y-4 shadow-sm">
           <h2 className="text-xl font-extrabold text-gray-900">Accès réservé à l'administrateur</h2>
           <p className="text-sm text-gray-500">Connectez-vous avec le compte administrateur pour gérer {BRAND}.</p>
           <button
@@ -1058,12 +1058,12 @@ export default function App() {
 
     return (
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-wrap items-center justify-between gap-4">
+        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 shadow-sm flex flex-wrap items-center justify-between gap-4">
           <div>
             <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold mb-2">
               Administration • {BRAND}
             </span>
-            <h1 className="text-2xl font-extrabold text-gray-900">Tableau de bord Administrateur</h1>
+            <h1 className="text-lg sm:text-2xl font-extrabold text-gray-900">Tableau de bord Administrateur</h1>
             <p className="text-xs text-gray-500 mt-1">
               Connecté en tant que {utilisateurActif.nom} ({utilisateurActif.email})
             </p>
@@ -1094,19 +1094,19 @@ export default function App() {
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <div className="bg-white rounded-2xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500">Utilisateurs</p>
-            <p className="text-2xl font-extrabold text-gray-900 mt-1">{utilisateurs.length}</p>
+            <p className="text-lg sm:text-2xl font-extrabold text-gray-900 mt-1">{utilisateurs.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500">Boutiques</p>
-            <p className="text-2xl font-extrabold text-gray-900 mt-1">{boutiques.length}</p>
+            <p className="text-lg sm:text-2xl font-extrabold text-gray-900 mt-1">{boutiques.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500">Produits</p>
-            <p className="text-2xl font-extrabold text-gray-900 mt-1">{produits.length}</p>
+            <p className="text-lg sm:text-2xl font-extrabold text-gray-900 mt-1">{produits.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border border-gray-100">
             <p className="text-xs text-gray-500">Commandes</p>
-            <p className="text-2xl font-extrabold text-gray-900 mt-1">{commandes.length}</p>
+            <p className="text-lg sm:text-2xl font-extrabold text-gray-900 mt-1">{commandes.length}</p>
           </div>
           <div className="bg-white rounded-2xl p-4 border border-gray-100 col-span-2 lg:col-span-1">
             <p className="text-xs text-gray-500">Volume commandes</p>
@@ -1118,7 +1118,7 @@ export default function App() {
 
         {ongletAdmin === "apercu" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-3">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-3">
               <h2 className="text-base font-extrabold text-gray-900">Dernières commandes</h2>
               {commandes.length === 0 ? (
                 <p className="text-sm text-gray-400">Aucune commande enregistrée.</p>
@@ -1137,7 +1137,7 @@ export default function App() {
               )}
             </div>
 
-            <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-3">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-3">
               <h2 className="text-base font-extrabold text-gray-900">Dernières boutiques</h2>
               {boutiques.length === 0 ? (
                 <p className="text-sm text-gray-400">Aucune boutique créée.</p>
@@ -1159,7 +1159,7 @@ export default function App() {
         )}
 
         {ongletAdmin === "commandes" && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-4">
             <h2 className="text-base font-extrabold text-gray-900">Gestion des commandes</h2>
             {commandes.length === 0 ? (
               <p className="text-sm text-gray-400">Aucune commande pour le moment.</p>
@@ -1194,7 +1194,7 @@ export default function App() {
         )}
 
         {ongletAdmin === "boutiques" && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-4">
             <h2 className="text-base font-extrabold text-gray-900">Gestion des boutiques</h2>
             {boutiques.length === 0 ? (
               <p className="text-sm text-gray-400">Aucune boutique enregistrée.</p>
@@ -1231,7 +1231,7 @@ export default function App() {
         )}
 
         {ongletAdmin === "produits" && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-4">
             <h2 className="text-base font-extrabold text-gray-900">Modération des produits</h2>
             {produits.length === 0 ? (
               <p className="text-sm text-gray-400">Aucun produit publié.</p>
@@ -1259,7 +1259,7 @@ export default function App() {
         )}
 
         {ongletAdmin === "utilisateurs" && (
-          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+          <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-4">
             <h2 className="text-base font-extrabold text-gray-900">Gestion des utilisateurs</h2>
             {utilisateurs.length === 0 ? (
               <p className="text-sm text-gray-400">Aucun utilisateur.</p>
@@ -1322,7 +1322,7 @@ export default function App() {
       </div>
 
       <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
           <LogoMarque onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }} />
 
           <div className="hidden md:flex flex-1 max-w-xl items-center bg-gray-100 rounded-2xl px-3.5 py-2">
@@ -1397,8 +1397,8 @@ export default function App() {
         {vue === 'boutique' && <VueVitrineBoutique />}
 
         {vue === 'panier' && (
-          <div className="max-w-4xl mx-auto px-4 py-8">
-            <h1 className="text-2xl font-extrabold mb-6">Panier</h1>
+          <div className="max-w-4xl mx-auto w-full px-3 sm:px-4 py-5 sm:py-8">
+            <h1 className="text-lg sm:text-2xl font-extrabold mb-6">Panier</h1>
             {panier.length === 0 ? (
               <div className="bg-white rounded-3xl p-10 text-center border">Panier vide.</div>
             ) : (
@@ -1516,7 +1516,7 @@ export default function App() {
             {boutiques.length > 0 && (
               <section>
                 <h2 className="text-lg font-extrabold mb-4">Boutiques populaires</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
                   {boutiques.map((b) => (
                     <div key={b.id} onClick={() => { setBoutiqueSelectionneeId(b.id); setVue('boutique'); }} className="bg-white p-5 rounded-2xl border cursor-pointer flex items-center gap-3">
                       <div className="w-12 h-12 rounded-xl bg-emerald-50 overflow-hidden flex items-center justify-center">
