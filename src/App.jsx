@@ -971,6 +971,341 @@ export default function App() {
   const meilleuresVentes = [...produits].sort((a, b) => (b.ventes || 0) - (a.ventes || 0)).slice(0, 5);
   const nouveauxProduits = [...produits].sort((a, b) => b.creeLe - a.creeLe).slice(0, 5);
 
+  
+  const VueEspaceAdmin = () => {
+    const [ongletAdmin, setOngletAdmin] = useState("apercu");
+
+    if (!utilisateurActif || utilisateurActif.role !== "admin") {
+      return (
+        <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl p-8 border border-gray-100 text-center space-y-4 shadow-sm">
+          <h2 className="text-xl font-extrabold text-gray-900">Accès réservé à l'administrateur</h2>
+          <p className="text-sm text-gray-500">Connectez-vous avec le compte administrateur pour gérer {BRAND}.</p>
+          <button
+            onClick={() => setVue("auth")}
+            className="px-6 py-2.5 rounded-xl bg-emerald-600 text-white text-sm font-bold"
+          >
+            Se connecter
+          </button>
+        </div>
+      );
+    }
+
+    const totalVolumeCommandes = commandes.reduce((acc, c) => {
+      const montant = Number(c.total || c.montantTotal || 0);
+      return acc + (Number.isFinite(montant) ? montant : 0);
+    }, 0);
+
+    const changerStatutCommandeAdmin = (commande, nouveauStatut) => {
+      setCommandes((prev) =>
+        prev.map((c) => (c.id === commande.id ? { ...c, statut: nouveauStatut } : c))
+      );
+      if (commande.clientId) {
+        ajouterNotification(
+          commande.clientId,
+          `Commande #${String(commande.id).slice(-6)} : ${nouveauStatut}`,
+          `Mise à jour effectuée par l'administration de ${BRAND}.`
+        );
+      }
+      notifierToast(`Commande #${String(commande.id).slice(-6)} -> ${nouveauStatut}`);
+    };
+
+    const changerRoleUtilisateur = (userId, nouveauRole) => {
+      setUtilisateurs((prev) =>
+        prev.map((u) => {
+          if (u.id !== userId) return u;
+          if (u.email && u.email.toLowerCase() === "loic90880@gmail.com") {
+            return { ...u, role: "admin" };
+          }
+          return { ...u, role: nouveauRole };
+        })
+      );
+      if (utilisateurActif.id === userId) {
+        setUtilisateurActif((prev) => ({ ...prev, role: nouveauRole }));
+      }
+      notifierToast("Rôle utilisateur mis à jour.");
+    };
+
+    const supprimerUtilisateur = (user) => {
+      if (user.email && user.email.toLowerCase() === "loic90880@gmail.com") {
+        notifierToast("Le compte administrateur principal ne peut pas être supprimé.", "erreur");
+        return;
+      }
+      setUtilisateurs((prev) => prev.filter((u) => u.id !== user.id));
+      notifierToast("Utilisateur supprimé.");
+    };
+
+    const basculerStatutBoutique = (boutique) => {
+      const etatActuel = boutique.statut || "active";
+      const prochainEtat = etatActuel === "active" ? "suspendue" : "active";
+      setBoutiques((prev) =>
+        prev.map((b) => (b.id === boutique.id ? { ...b, statut: prochainEtat } : b))
+      );
+      notifierToast(`Boutique "${boutique.nom}" : ${prochainEtat}.`);
+    };
+
+    const supprimerBoutique = (boutiqueId) => {
+      setBoutiques((prev) => prev.filter((b) => b.id !== boutiqueId));
+      setProduits((prev) => prev.filter((p) => p.boutiqueId !== boutiqueId));
+      notifierToast("Boutique et ses produits supprimés.");
+    };
+
+    const supprimerProduit = (produitId) => {
+      setProduits((prev) => prev.filter((p) => p.id !== produitId));
+      notifierToast("Produit retiré du catalogue.");
+    };
+
+    const statutsCommande = ["En attente", "Confirmée", "Payée", "Livrée", "Annulée"];
+
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
+        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <span className="inline-block px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-extrabold mb-2">
+              Administration • {BRAND}
+            </span>
+            <h1 className="text-2xl font-extrabold text-gray-900">Tableau de bord Administrateur</h1>
+            <p className="text-xs text-gray-500 mt-1">
+              Connecté en tant que {utilisateurActif.nom} ({utilisateurActif.email})
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: "apercu", label: "Aperçu" },
+              { id: "commandes", label: `Commandes (${commandes.length})` },
+              { id: "boutiques", label: `Boutiques (${boutiques.length})` },
+              { id: "produits", label: `Produits (${produits.length})` },
+              { id: "utilisateurs", label: `Utilisateurs (${utilisateurs.length})` },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setOngletAdmin(tab.id)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition ${
+                  ongletAdmin === tab.id
+                    ? "bg-emerald-600 text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="bg-white rounded-2xl p-4 border border-gray-100">
+            <p className="text-xs text-gray-500">Utilisateurs</p>
+            <p className="text-2xl font-extrabold text-gray-900 mt-1">{utilisateurs.length}</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 border border-gray-100">
+            <p className="text-xs text-gray-500">Boutiques</p>
+            <p className="text-2xl font-extrabold text-gray-900 mt-1">{boutiques.length}</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 border border-gray-100">
+            <p className="text-xs text-gray-500">Produits</p>
+            <p className="text-2xl font-extrabold text-gray-900 mt-1">{produits.length}</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 border border-gray-100">
+            <p className="text-xs text-gray-500">Commandes</p>
+            <p className="text-2xl font-extrabold text-gray-900 mt-1">{commandes.length}</p>
+          </div>
+          <div className="bg-white rounded-2xl p-4 border border-gray-100 col-span-2 lg:col-span-1">
+            <p className="text-xs text-gray-500">Volume commandes</p>
+            <p className="text-xl font-extrabold text-emerald-700 mt-1">
+              {totalVolumeCommandes.toLocaleString("fr-FR")} Ar
+            </p>
+          </div>
+        </div>
+
+        {ongletAdmin === "apercu" && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-3">
+              <h2 className="text-base font-extrabold text-gray-900">Dernières commandes</h2>
+              {commandes.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucune commande enregistrée.</p>
+              ) : (
+                commandes.slice(0, 5).map((c) => (
+                  <div key={c.id} className="flex items-center justify-between py-2 border-b last:border-b-0 text-xs">
+                    <div>
+                      <p className="font-bold text-gray-800">#{String(c.id).slice(-6)} • {c.clientNom || "Client"}</p>
+                      <p className="text-gray-500">{c.modePaiement || "Mobile Money"} • {Number(c.total || 0).toLocaleString("fr-FR")} Ar</p>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-700 font-bold">
+                      {c.statut || "En attente"}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-3">
+              <h2 className="text-base font-extrabold text-gray-900">Dernières boutiques</h2>
+              {boutiques.length === 0 ? (
+                <p className="text-sm text-gray-400">Aucune boutique créée.</p>
+              ) : (
+                boutiques.slice(0, 5).map((b) => (
+                  <div key={b.id} className="flex items-center justify-between py-2 border-b last:border-b-0 text-xs">
+                    <div>
+                      <p className="font-bold text-gray-800">{b.nom}</p>
+                      <p className="text-gray-500">{b.ville || "Madagascar"} • {b.telephonePaiement || "Non renseigné"}</p>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 font-bold">
+                      {b.statut || "active"}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+
+        {ongletAdmin === "commandes" && (
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+            <h2 className="text-base font-extrabold text-gray-900">Gestion des commandes</h2>
+            {commandes.length === 0 ? (
+              <p className="text-sm text-gray-400">Aucune commande pour le moment.</p>
+            ) : (
+              <div className="space-y-3">
+                {commandes.map((c) => (
+                  <div key={c.id} className="p-4 rounded-2xl border border-gray-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+                    <div>
+                      <p className="font-extrabold text-gray-900">Commande #{String(c.id).slice(-6)}</p>
+                      <p className="text-gray-500">
+                        Client : {c.clientNom || "Inconnu"} ({c.clientTelephone || "—"}) • Total :{" "}
+                        <strong className="text-gray-800">{Number(c.total || 0).toLocaleString("fr-FR")} Ar</strong>
+                      </p>
+                      {c.referencePaiement && (
+                        <p className="text-emerald-700 font-semibold mt-0.5">Réf. paiement : {c.referencePaiement}</p>
+                      )}
+                    </div>
+                    <select
+                      value={c.statut || "En attente"}
+                      onChange={(e) => changerStatutCommandeAdmin(c, e.target.value)}
+                      className="px-3 py-2 rounded-xl border border-gray-200 bg-gray-50 font-bold text-gray-800"
+                    >
+                      {statutsCommande.map((st) => (
+                        <option key={st} value={st}>{st}</option>
+                      ))}
+                    </select>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {ongletAdmin === "boutiques" && (
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+            <h2 className="text-base font-extrabold text-gray-900">Gestion des boutiques</h2>
+            {boutiques.length === 0 ? (
+              <p className="text-sm text-gray-400">Aucune boutique enregistrée.</p>
+            ) : (
+              <div className="space-y-3">
+                {boutiques.map((b) => (
+                  <div key={b.id} className="p-4 rounded-2xl border border-gray-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+                    <div>
+                      <p className="font-extrabold text-gray-900">{b.nom}</p>
+                      <p className="text-gray-500">
+                        {b.ville || "Madagascar"} • Paiement : {b.telephonePaiement || "Non défini"} • Statut :{" "}
+                        <span className="font-bold text-emerald-700">{b.statut || "active"}</span>
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => basculerStatutBoutique(b)}
+                        className="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 font-bold"
+                      >
+                        {(b.statut || "active") === "active" ? "Suspendre" : "Activer"}
+                      </button>
+                      <button
+                        onClick={() => supprimerBoutique(b.id)}
+                        className="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 font-bold"
+                      >
+                        Supprimer
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {ongletAdmin === "produits" && (
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+            <h2 className="text-base font-extrabold text-gray-900">Modération des produits</h2>
+            {produits.length === 0 ? (
+              <p className="text-sm text-gray-400">Aucun produit publié.</p>
+            ) : (
+              <div className="space-y-3">
+                {produits.map((p) => (
+                  <div key={p.id} className="p-4 rounded-2xl border border-gray-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+                    <div>
+                      <p className="font-extrabold text-gray-900">{p.nom}</p>
+                      <p className="text-gray-500">
+                        {p.categorie || "Divers"} • {Number(p.prix || 0).toLocaleString("fr-FR")} Ar • Stock : {p.stock ?? "—"}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => supprimerProduit(p.id)}
+                      className="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 font-bold"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {ongletAdmin === "utilisateurs" && (
+          <div className="bg-white rounded-3xl p-6 border border-gray-100 space-y-4">
+            <h2 className="text-base font-extrabold text-gray-900">Gestion des utilisateurs</h2>
+            {utilisateurs.length === 0 ? (
+              <p className="text-sm text-gray-400">Aucun utilisateur.</p>
+            ) : (
+              <div className="space-y-3">
+                {utilisateurs.map((u) => {
+                  const estAdminPrincipal = u.email && u.email.toLowerCase() === "loic90880@gmail.com";
+                  return (
+                    <div key={u.id} className="p-4 rounded-2xl border border-gray-100 flex flex-wrap items-center justify-between gap-4 text-xs">
+                      <div>
+                        <p className="font-extrabold text-gray-900">{u.nom || "Utilisateur"}</p>
+                        <p className="text-gray-500">
+                          {u.email} • {u.ville || "Madagascar"} • Inscrit le {u.creeLe || "—"}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <select
+                          disabled={estAdminPrincipal}
+                          value={u.role || "client"}
+                          onChange={(e) => changerRoleUtilisateur(u.id, e.target.value)}
+                          className="px-3 py-1.5 rounded-xl border border-gray-200 bg-gray-50 font-bold text-gray-800 disabled:opacity-60"
+                        >
+                          <option value="client">client</option>
+                          <option value="vendeur">vendeur</option>
+                          <option value="admin">admin</option>
+                        </select>
+                        {!estAdminPrincipal && (
+                          <button
+                            onClick={() => supprimerUtilisateur(u)}
+                            className="px-3 py-1.5 rounded-xl bg-red-50 text-red-700 font-bold"
+                          >
+                            Supprimer
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
       {toast && (
@@ -1014,6 +1349,11 @@ export default function App() {
                 <button onClick={() => { setOngletClient('notifications'); setVue('client'); }} className="relative p-2.5 rounded-xl bg-gray-100">
                   <Bell className="w-4 h-4" />
                 </button>
+                {utilisateurActif?.role === "admin" && (
+                  <button onClick={() => setVue("admin")} className="px-3 py-2 rounded-xl bg-emerald-700 text-white text-xs font-bold">
+                    Admin
+                  </button>
+                )}
                 <button onClick={() => setVue('client')} className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center gap-1">
                   <User className="w-4 h-4" /> {utilisateurActif.nom.split(' ')[0]}
                 </button>
@@ -1048,6 +1388,7 @@ export default function App() {
       </header>
 
       <main className="flex-1">
+        {vue === 'admin' && <VueEspaceAdmin />}
         {vue === 'auth' && <VueAuthentification />}
         {vue === 'vendeur' && <VueEspaceVendeur />}
         {vue === 'client' && <VueEspaceClient />}
