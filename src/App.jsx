@@ -126,7 +126,7 @@ export default function App() {
   const [avis, setAvis] = useState(() => chargerStorage('reviews', []));
   const [notifications, setNotifications] = useState(() => chargerStorage('notifications', []));
 
-  const [vue, setVue] = useState('accueil');
+  const [vue, setVue] = useState(() => (chargerStorage('currentUser', null) ? 'accueil' : 'auth'));
   const [recherche, setRecherche] = useState('');
   const [categorieFiltre, setCategorieFiltre] = useState('Toutes');
   const [villeFiltre, setVilleFiltre] = useState('Toutes');
