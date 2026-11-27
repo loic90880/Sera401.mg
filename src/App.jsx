@@ -71,21 +71,14 @@ const chargerStorage = (cle, defaut) => {
 };
 
 const LogoMarque = ({ onClick }) => (
-  <button onClick={onClick} className="flex items-center gap-2.5 text-left focus:outline-none group">
-    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-      <svg viewBox="0 0 36 36" className="w-7 h-7" fill="none">
-        <path d="M6 12L10 28H26L30 12H6Z" stroke="white" strokeWidth="2.5" strokeLinejoin="round" />
-        <path d="M13 12V9C13 6.79086 14.7909 5 17 5H19C21.2091 5 23 6.79086 23 9V12" stroke="#FB923C" strokeWidth="2.5" strokeLinecap="round" />
-        <circle cx="18" cy="20" r="3" fill="#FB923C" />
-      </svg>
-      <span className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full border-2 border-white" />
-    </div>
-    <div>
-      <span className="text-lg font-extrabold tracking-tight text-emerald-700 block">{BRAND}</span>
-      <span className="block text-[10px] font-semibold uppercase tracking-widest text-orange-500 -mt-1">
-        Marketplace • Madagascar
-      </span>
-    </div>
+  <button onClick={onClick} className="flex items-center text-left focus:outline-none shrink-0 group">
+    <span className="inline-flex items-center justify-center rounded-xl bg-[#fff1f0] border border-[#e02e24]/25 px-1.5 py-1 shadow-2xs group-hover:border-[#e02e24]/50 transition-colors">
+      <img
+        src="/logo-401.png"
+        alt={BRAND}
+        className="h-7 sm:h-8 w-auto max-w-[110px] sm:max-w-[140px] object-contain rounded-md"
+      />
+    </span>
   </button>
 );
 
@@ -242,44 +235,45 @@ export default function App() {
             </div>
           )}
           {produit.promo > 0 && (
-            <span className="absolute top-2.5 left-2.5 bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow">-{produit.promo}%</span>
+            <span className="absolute top-2 left-2 bg-[#e02e24] text-white text-[11px] font-extrabold px-2 py-0.5 rounded shadow-sm">-{produit.promo}%</span>
           )}
           {produit.stock <= 0 && (
-            <span className="absolute inset-0 bg-black/50 text-white font-bold text-sm flex items-center justify-center">Rupture de stock</span>
+            <span className="absolute inset-0 bg-black/55 text-white font-bold text-xs flex items-center justify-center">Épuisé</span>
           )}
-          <button onClick={(e) => { e.stopPropagation(); basculerFavori(produit.id); }} className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-white/90 shadow flex items-center justify-center">
-            <Heart className={`w-4 h-4 ${estFavori(produit.id) ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <button onClick={(e) => { e.stopPropagation(); basculerFavori(produit.id); }} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 shadow-sm flex items-center justify-center">
+            <Heart className={`w-3.5 h-3.5 ${estFavori(produit.id) ? 'fill-[#e02e24] text-[#e02e24]' : 'text-gray-500'}`} />
           </button>
         </div>
 
-        <div className="p-3.5 flex-1 flex flex-col justify-between">
+        <div className="p-2.5 flex-1 flex flex-col justify-between bg-white">
           <div>
-            <div className="flex items-center justify-between text-[11px] text-gray-500 mb-1">
-              <span className="truncate max-w-[65%]">{boutique?.nom || 'Boutique'}</span>
-              <span className="flex items-center gap-0.5 text-emerald-700 font-medium"><MapPin className="w-3 h-3" /> {produit.ville}</span>
-            </div>
-            <h3 onClick={() => { setProduitSelectionneId(produit.id); setVue('produit'); }} className="font-semibold text-gray-800 text-sm line-clamp-2 cursor-pointer hover:text-emerald-700 mb-1.5">
+            <h3 onClick={() => { setProduitSelectionneId(produit.id); setVue('produit'); }} className="font-medium text-gray-800 text-xs sm:text-sm line-clamp-2 cursor-pointer hover:text-[#e02e24] mb-1 leading-snug">
               {produit.nom}
             </h3>
-            {noteMoyenne && (
-              <div className="flex items-center gap-1 text-xs text-amber-500 mb-1.5">
-                <Star className="w-3.5 h-3.5 fill-amber-400" />
-                <span className="font-semibold text-gray-700">{noteMoyenne}</span>
-                <span className="text-gray-400">({avisProduit.length})</span>
-              </div>
-            )}
+            <div className="flex flex-wrap items-center gap-1 text-[10px] text-gray-500 mb-1.5">
+              <span className="px-1.5 py-0.5 rounded bg-[#fff1f0] text-[#e02e24] font-semibold truncate max-w-[55%]">{boutique?.nom || 'Boutique'}</span>
+              <span className="inline-flex items-center gap-0.5 text-gray-500"><MapPin className="w-2.5 h-2.5" /> {produit.ville}</span>
+              {noteMoyenne && (
+                <span className="inline-flex items-center gap-0.5 text-amber-500 font-semibold">
+                  <Star className="w-2.5 h-2.5 fill-amber-400" />{noteMoyenne}
+                </span>
+              )}
+            </div>
           </div>
-          <div className="pt-2 border-t border-gray-50">
-            <div className="flex items-baseline gap-2 mb-2.5">
-              <span className="text-base font-extrabold text-emerald-700">{formatMGA(prixFinal)}</span>
-              {produit.promo > 0 && <span className="text-xs text-gray-400 line-through">{formatMGA(produit.prix)}</span>}
+          <div className="pt-1.5">
+            <div className="flex items-baseline justify-between gap-1 mb-2">
+              <div className="flex items-baseline gap-1.5 min-w-0">
+                <span className="text-sm sm:text-base font-extrabold text-[#e02e24] truncate">{formatMGA(prixFinal)}</span>
+                {produit.promo > 0 && <span className="text-[10px] text-gray-400 line-through truncate">{formatMGA(produit.prix)}</span>}
+              </div>
+              <span className="text-[10px] text-gray-400 shrink-0">{produit.ventes || 0} vendus</span>
             </div>
             <button
               onClick={() => ajouterAuPanier(produit, 1)}
               disabled={produit.stock <= 0}
-              className="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-200 disabled:text-gray-400 text-white text-xs font-semibold flex items-center justify-center gap-1.5"
+              className="w-full py-1.5 px-2.5 rounded-lg bg-[#e02e24] hover:bg-[#c42118] active:scale-[0.99] disabled:bg-gray-200 disabled:text-gray-400 text-white text-xs font-bold flex items-center justify-center gap-1"
             >
-              <ShoppingCart className="w-3.5 h-3.5" /> Ajouter au panier
+              <ShoppingCart className="w-3.5 h-3.5" /> Acheter
             </button>
           </div>
         </div>
@@ -684,6 +678,41 @@ export default function App() {
           : modePaiement === 'automatique' && referencePaiement.trim() ? 'Paiement confirmé'
             : 'En attente de paiement';
 
+      let codeUssdOrange = "";
+      let lienUssdOrange = "";
+      if (methode === "orange") {
+        const premierArticle = articlesCommande[0];
+        const prodRef = produits.find((p) => p.id === premierArticle?.produitId);
+        const boutique = boutiques.find(
+          (b) => b.id === premierArticle?.boutiqueId || b.id === prodRef?.boutiqueId
+        );
+        const vendeur = utilisateurs.find(
+          (u) =>
+            u.id === boutique?.vendeurId ||
+            u.id === boutique?.proprietaireId ||
+            u.id === prodRef?.vendeurId ||
+            u.boutiqueId === boutique?.id
+        );
+        const numBrut =
+          boutique?.telephone ||
+          boutique?.tel ||
+          vendeur?.telephone ||
+          vendeur?.tel ||
+          prodRef?.telephone ||
+          prodRef?.vendeurTelephone ||
+          "";
+        const chiffres = String(numBrut).replace(/\D/g, "");
+        const numVendeur = chiffres.startsWith("261") && chiffres.length >= 12
+          ? "0" + chiffres.slice(3, 12)
+          : chiffres.slice(0, 10);
+        const montantTotal = Math.round(Number(totalGlobal) || 0);
+
+        if (numVendeur && montantTotal > 0) {
+          codeUssdOrange = `#144*1*1*${numVendeur}*${numVendeur}*${montantTotal}*1#`;
+          lienUssdOrange = `tel:${codeUssdOrange.replace(/#/g, "%23")}`;
+        }
+      }
+
       const nouvelleCommande = {
         id: 'CMD_' + Date.now(),
         clientId: utilisateurActif.id,
@@ -702,6 +731,8 @@ export default function App() {
         referencePaiement,
         preuvePaiement,
         statut: statutInitial,
+        codeUssdOrange,
+        lienUssdOrange,
         date: new Date().toLocaleString('fr-FR')
       };
 
@@ -713,6 +744,24 @@ export default function App() {
       );
 
       setCommandes((prev) => [nouvelleCommande, ...prev]);
+
+      if (methode === "orange") {
+        if (lienUssdOrange) {
+          const lienTel = document.createElement("a");
+          lienTel.href = lienUssdOrange;
+          lienTel.rel = "noopener noreferrer";
+          document.body.appendChild(lienTel);
+          lienTel.click();
+          document.body.removeChild(lienTel);
+          setTimeout(() => {
+            if (document.visibilityState === "visible") {
+              window.location.href = lienUssdOrange;
+            }
+          }, 200);
+        } else {
+          notifierToast("Numéro Orange Money du vendeur introuvable.");
+        }
+      }
       setPanier([]);
       ajouterNotification(utilisateurActif.id, 'Commande enregistrée', `Commande #${nouvelleCommande.id.slice(-6)} créée.`);
       notifierToast('Commande validée !');
@@ -833,6 +882,16 @@ export default function App() {
                 </div>
                 <p className="text-xs text-gray-500">{cmd.typeLivraison} : {cmd.ville}, {cmd.quartier} ({cmd.transporteur})</p>
                 <p className="text-sm font-extrabold text-emerald-700">{formatMGA(cmd.total)}</p>
+                {cmd.lienUssdOrange && (
+                  <div className="pt-2">
+                    <a
+                      href={cmd.lienUssdOrange}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-bold shadow-sm"
+                    >
+                      Payer Orange Money ({cmd.codeUssdOrange})
+                    </a>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -898,52 +957,110 @@ export default function App() {
     const avisLies = avis.filter((a) => a.cibleId === produit.id || a.cibleId === boutique?.id);
 
     return (
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6">
-        <button onClick={() => setVue('accueil')} className="text-xs font-bold text-emerald-700">← Retour</button>
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="aspect-square rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center">
+      <div className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+        <button onClick={() => setVue('accueil')} className="inline-flex items-center gap-1 text-xs font-bold text-[#e02e24]">← Retour</button>
+
+        <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="relative aspect-square rounded-2xl bg-[#f8f8fa] overflow-hidden flex items-center justify-center">
+            {produit.promo > 0 && (
+              <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#e02e24] text-white text-xs font-extrabold">
+                -{produit.promo}%
+              </span>
+            )}
             {produit.image ? <img src={produit.image} alt="" className="w-full h-full object-cover" /> : <Package className="w-14 h-14 text-gray-300" />}
           </div>
-          <div className="space-y-4">
-            <span className="text-xs font-bold text-emerald-700">{produit.categorie}</span>
-            <h1 className="text-lg sm:text-2xl font-extrabold">{produit.nom}</h1>
-            <p className="text-lg sm:text-2xl font-extrabold text-emerald-700">{formatMGA(prixFinal)}</p>
-            <p className="text-sm text-gray-600">{produit.description}</p>
-            {boutique && (
-              <button onClick={() => { setBoutiqueSelectionneeId(boutique.id); setVue('boutique'); }} className="text-xs font-bold text-orange-600 underline">
-                Boutique : {boutique.nom} ({boutique.ville})
+
+          <div className="flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="flex items-baseline justify-between gap-2 bg-[#fff1f0] px-3.5 py-2.5 rounded-xl">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-xl sm:text-2xl font-extrabold text-[#e02e24]">{formatMGA(prixFinal)}</span>
+                  {produit.promo > 0 && (
+                    <span className="text-xs text-gray-400 line-through">{formatMGA(produit.prix)}</span>
+                  )}
+                </div>
+                <span className="text-[11px] font-semibold text-gray-600">{produit.ventes || 0} vendu(s)</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-gray-100 text-[11px] font-bold text-gray-700">{produit.categorie}</span>
+                {produit.ville && <span className="text-[11px] text-gray-500">• {produit.ville}</span>}
+              </div>
+
+              <h1 className="text-base sm:text-xl font-extrabold text-gray-900 leading-snug">{produit.nom}</h1>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">{produit.description}</p>
+
+              <div className="grid grid-cols-2 gap-2 pt-1 text-[11px] text-gray-600">
+                <div className="bg-[#f8f8fa] px-2.5 py-2 rounded-xl font-medium">✓ Mobile Money & Cash</div>
+                <div className="bg-[#f8f8fa] px-2.5 py-2 rounded-xl font-medium">✓ Livraison Madagascar</div>
+              </div>
+
+              {boutique && (
+                <div
+                  onClick={() => { setBoutiqueSelectionneeId(boutique.id); setVue('boutique'); }}
+                  className="flex items-center justify-between p-2.5 rounded-xl border border-gray-100 bg-[#f8f8fa] cursor-pointer hover:border-[#e02e24]/40"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 rounded-lg bg-[#fff1f0] flex items-center justify-center shrink-0 overflow-hidden">
+                      {boutique.logo ? <img src={boutique.logo} alt="" className="w-full h-full object-cover" /> : <Store className="w-4 h-4 text-[#e02e24]" />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-extrabold text-gray-900 truncate">{boutique.nom}</p>
+                      <p className="text-[11px] text-gray-500 truncate">{boutique.ville}</p>
+                    </div>
+                  </div>
+                  <span className="text-[11px] font-bold text-[#e02e24] shrink-0">Visiter ›</span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 pt-2">
+              <button
+                onClick={() => ajouterAuPanier(produit, 1)}
+                className="py-3 rounded-full bg-[#fff1f0] text-[#e02e24] border border-[#e02e24]/30 font-extrabold text-xs sm:text-sm"
+              >
+                + Panier
               </button>
-            )}
-            <button onClick={() => ajouterAuPanier(produit, 1)} className="w-full py-3 rounded-xl bg-orange-500 text-white font-bold text-sm">
-              Ajouter au panier
-            </button>
+              <button
+                onClick={() => { ajouterAuPanier(produit, 1); setVue('panier'); }}
+                className="py-3 rounded-full bg-[#e02e24] hover:bg-[#c42118] text-white font-extrabold text-xs sm:text-sm shadow-sm"
+              >
+                Acheter maintenant
+              </button>
+            </div>
           </div>
         </div>
-        <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-gray-100 space-y-4">
-          <h3 className="font-bold">Avis ({avisLies.length})</h3>
+
+        <div className="bg-white rounded-2xl p-3.5 sm:p-5 border border-gray-100 space-y-3">
+          <h3 className="text-sm font-extrabold text-gray-900">Avis clients ({avisLies.length})</h3>
           <form onSubmit={(e) => {
             e.preventDefault();
             if (!utilisateurActif) { setVue('auth'); return; }
             setAvis((prev) => [{ id: 'rev_' + Date.now(), type: cibleAvis, cibleId: cibleAvis === 'produit' ? produit.id : boutique?.id, auteurNom: utilisateurActif.nom, note: Number(note), commentaire, date: new Date().toLocaleDateString('fr-FR') }, ...prev]);
             setCommentaire('');
             notifierToast('Avis publié.');
-          }} className="space-y-3">
-            <div className="flex gap-2">
-              <button type="button" onClick={() => setCibleAvis('produit')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${cibleAvis === 'produit' ? 'bg-emerald-50 border-emerald-600' : ''}`}>Produit</button>
-              <button type="button" onClick={() => setCibleAvis('vendeur')} className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${cibleAvis === 'vendeur' ? 'bg-orange-50 border-orange-500' : ''}`}>Vendeur</button>
+          }} className="space-y-2.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" onClick={() => setCibleAvis('produit')} className={`px-3 py-1 rounded-full text-xs font-bold border ${cibleAvis === 'produit' ? 'bg-[#fff1f0] text-[#e02e24] border-[#e02e24]' : 'border-gray-200 text-gray-600'}`}>Produit</button>
+              <button type="button" onClick={() => setCibleAvis('vendeur')} className={`px-3 py-1 rounded-full text-xs font-bold border ${cibleAvis === 'vendeur' ? 'bg-[#fff1f0] text-[#e02e24] border-[#e02e24]' : 'border-gray-200 text-gray-600'}`}>Vendeur</button>
+              <select value={note} onChange={(e) => setNote(e.target.value)} className="px-3 py-1 rounded-full border border-gray-200 text-xs font-bold bg-white">
+                <option value="5">5/5 ★</option><option value="4">4/5 ★</option><option value="3">3/5 ★</option><option value="2">2/5 ★</option><option value="1">1/5 ★</option>
+              </select>
             </div>
-            <select value={note} onChange={(e) => setNote(e.target.value)} className="px-3 py-2 rounded-xl border text-sm bg-white">
-              <option value="5">5/5</option><option value="4">4/5</option><option value="3">3/5</option><option value="2">2/5</option><option value="1">1/5</option>
-            </select>
-            <textarea required rows={2} value={commentaire} onChange={(e) => setCommentaire(e.target.value)} className="w-full px-3.5 py-2 rounded-xl border text-sm" />
-            <button type="submit" className="px-5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">Publier</button>
+            <textarea required rows={2} placeholder="Votre avis sur ce produit ou vendeur..." value={commentaire} onChange={(e) => setCommentaire(e.target.value)} className="w-full px-3 py-2 rounded-xl border border-gray-200 text-xs sm:text-sm outline-none focus:border-[#e02e24]" />
+            <button type="submit" className="px-4 py-2 rounded-full bg-[#e02e24] text-white text-xs font-bold">Publier l'avis</button>
           </form>
-          {avisLies.map((a) => (
-            <div key={a.id} className="p-3 rounded-xl bg-gray-50 text-xs">
-              <strong>{a.auteurNom}</strong> ({a.type}) — {'★'.repeat(a.note)}
-              <p className="mt-1">{a.commentaire}</p>
-            </div>
-          ))}
+          <div className="space-y-2">
+            {avisLies.map((a) => (
+              <div key={a.id} className="p-2.5 rounded-xl bg-[#f8f8fa] text-xs">
+                <div className="flex items-center justify-between">
+                  <strong className="text-gray-900">{a.auteurNom} <span className="font-normal text-gray-400">({a.type})</span></strong>
+                  <span className="text-[#e02e24] font-bold">{'★'.repeat(a.note)}</span>
+                </div>
+                <p className="mt-1 text-gray-700">{a.commentaire}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -954,13 +1071,13 @@ export default function App() {
     if (!boutique) return null;
     const produitsBoutique = produits.filter((p) => p.boutiqueId === boutique.id);
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-        <div className="bg-emerald-700 text-white rounded-2xl sm:rounded-3xl p-4 sm:p-7">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+        <div className="bg-gradient-to-r from-[#e02e24] to-[#ff6b35] text-white rounded-2xl p-4 sm:p-6">
           <h1 className="text-lg sm:text-2xl font-extrabold">{boutique.nom}</h1>
-          <p className="text-xs text-emerald-100">{boutique.ville}</p>
-          <p className="text-sm mt-2">{boutique.description}</p>
+          <p className="text-xs text-white/90">{boutique.ville}</p>
+          <p className="text-xs sm:text-sm mt-1.5 text-white/95">{boutique.description}</p>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
           {produitsBoutique.map((p) => <CarteProduit key={p.id} produit={p} />)}
         </div>
       </div>
@@ -1314,72 +1431,78 @@ export default function App() {
         </div>
       )}
 
-      <div className="bg-emerald-900 text-white text-[11px] py-1.5 px-4">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <span>{BRAND} — Marketplace de Madagascar</span>
-          <button onClick={() => setVue('vendeur')} className="text-orange-300 font-bold hover:underline">Ouvrir une boutique</button>
-        </div>
-      </div>
-
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-2.5 sm:gap-4">
+      <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 pt-2.5 pb-2 flex items-center justify-between gap-2">
           <LogoMarque onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }} />
 
-          <div className="hidden md:flex flex-1 max-w-xl items-center bg-gray-100 rounded-2xl px-3.5 py-2">
-            <Search className="w-4 h-4 text-gray-400 mr-2" />
+          <div className="flex-1 max-w-xl flex items-center bg-[#f3f4f6] border border-[#e02e24]/30 rounded-full px-3 py-1.5">
+            <Search className="w-4 h-4 text-[#e02e24] mr-1.5 shrink-0" />
             <input
               type="text"
               value={recherche}
               onChange={(e) => { setRecherche(e.target.value); if (vue !== 'catalogue') setVue('catalogue'); }}
               placeholder={`Rechercher sur ${BRAND}...`}
-              className="w-full bg-transparent text-sm outline-none"
+              className="w-full bg-transparent text-xs sm:text-sm text-gray-800 outline-none"
             />
-            <select value={villeFiltre} onChange={(e) => setVilleFiltre(e.target.value)} className="text-xs font-semibold text-gray-600 bg-transparent border-l pl-2 ml-2 outline-none">
-              <option value="Toutes">Tout Madagascar</option>
+            <select value={villeFiltre} onChange={(e) => setVilleFiltre(e.target.value)} className="text-[11px] font-bold text-[#e02e24] bg-transparent border-l border-gray-300 pl-1.5 ml-1.5 outline-none max-w-[95px] sm:max-w-none">
+              <option value="Toutes">Madagascar</option>
               {VILLES_MADAGASCAR.map((v) => <option key={v.nom} value={v.nom}>{v.nom}</option>)}
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
-            <button onClick={() => setVue('vendeur')} className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-orange-50 text-orange-700 text-xs font-bold">
-              <Store className="w-4 h-4" /> Vendeur
+          <div className="hidden md:flex items-center gap-2">
+            <button onClick={() => setVue('vendeur')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] text-[#e02e24] text-xs font-bold">
+              <Store className="w-3.5 h-3.5" /> Vendeur
             </button>
             {utilisateurActif ? (
               <>
-                <button onClick={() => { setOngletClient('notifications'); setVue('client'); }} className="relative p-2.5 rounded-xl bg-gray-100">
-                  <Bell className="w-4 h-4" />
+                <button onClick={() => { setOngletClient('notifications'); setVue('client'); }} className="relative p-2 rounded-full bg-gray-100">
+                  <Bell className="w-4 h-4 text-gray-700" />
                 </button>
                 {utilisateurActif?.role === "admin" && (
-                  <button onClick={() => setVue("admin")} className="px-3 py-2 rounded-xl bg-emerald-700 text-white text-xs font-bold">
+                  <button onClick={() => setVue("admin")} className="px-3 py-1.5 rounded-full bg-gray-900 text-white text-xs font-bold">
                     Admin
                   </button>
                 )}
-                <button onClick={() => setVue('client')} className="px-3 py-2 rounded-xl bg-emerald-50 text-emerald-800 text-xs font-bold flex items-center gap-1">
-                  <User className="w-4 h-4" /> {utilisateurActif.nom.split(' ')[0]}
+                <button onClick={() => setVue('client')} className="px-3 py-1.5 rounded-full bg-[#fff1f0] text-[#e02e24] text-xs font-bold flex items-center gap-1">
+                  <User className="w-3.5 h-3.5" /> {utilisateurActif.nom.split(' ')[0]}
                 </button>
-                <button onClick={() => { setUtilisateurActif(null); setVue('accueil'); }} className="p-2.5 rounded-xl text-gray-400 hover:text-red-600">
+                <button onClick={() => { setUtilisateurActif(null); setVue('accueil'); }} className="p-2 rounded-full text-gray-400 hover:text-[#e02e24]">
                   <LogOut className="w-4 h-4" />
                 </button>
               </>
             ) : (
-              <button onClick={() => setVue('auth')} className="px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold">Connexion</button>
+              <button onClick={() => setVue('auth')} className="px-4 py-1.5 rounded-full bg-[#e02e24] text-white text-xs font-bold">Connexion</button>
             )}
-            <button onClick={() => setVue('panier')} className="relative p-2.5 rounded-xl bg-orange-500 text-white">
+            <button onClick={() => setVue('panier')} className="relative p-2 rounded-full bg-[#e02e24] text-white">
               <ShoppingCart className="w-4 h-4" />
-              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-800 text-white text-[10px] font-bold flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center">
                 {panier.reduce((s, i) => s + i.quantite, 0)}
               </span>
             </button>
           </div>
         </div>
 
-        <nav className="border-t border-gray-100 bg-white overflow-x-auto">
-          <div className="max-w-7xl mx-auto px-4 py-2 flex items-center gap-2 whitespace-nowrap">
-            <button onClick={() => { setCategorieFiltre('Toutes'); setVue('catalogue'); }} className={`px-3 py-1 rounded-lg text-xs font-bold ${categorieFiltre === 'Toutes' && vue === 'catalogue' ? 'bg-emerald-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
-              Toutes les catégories
+        <nav className="bg-white overflow-x-auto no-scrollbar">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 flex items-center gap-4 whitespace-nowrap text-xs sm:text-sm">
+            <button
+              onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }}
+              className={`py-2 border-b-2 transition-colors ${vue === 'accueil' ? 'border-[#e02e24] text-[#e02e24] font-extrabold' : 'border-transparent text-gray-600 font-medium'}`}
+            >
+              Recommandé
+            </button>
+            <button
+              onClick={() => { setCategorieFiltre('Toutes'); setVue('catalogue'); }}
+              className={`py-2 border-b-2 transition-colors ${categorieFiltre === 'Toutes' && vue === 'catalogue' ? 'border-[#e02e24] text-[#e02e24] font-extrabold' : 'border-transparent text-gray-600 font-medium'}`}
+            >
+              Tout voir
             </button>
             {CATEGORIES.map((cat) => (
-              <button key={cat} onClick={() => { setCategorieFiltre(cat); setVue('catalogue'); }} className={`px-3 py-1 rounded-lg text-xs ${categorieFiltre === cat && vue === 'catalogue' ? 'bg-emerald-600 text-white font-bold' : 'text-gray-600 hover:bg-emerald-50'}`}>
+              <button
+                key={cat}
+                onClick={() => { setCategorieFiltre(cat); setVue('catalogue'); }}
+                className={`py-2 border-b-2 transition-colors ${categorieFiltre === cat && vue === 'catalogue' ? 'border-[#e02e24] text-[#e02e24] font-extrabold' : 'border-transparent text-gray-600 font-medium'}`}
+              >
                 {cat}
               </button>
             ))}
@@ -1434,15 +1557,30 @@ export default function App() {
         )}
 
         {vue === 'catalogue' && (
-          <div className="max-w-7xl mx-auto px-4 py-8 space-y-6">
-            <div className="flex flex-wrap justify-between items-center gap-3 bg-white p-4 rounded-2xl border">
-              <h1 className="font-extrabold">{categorieFiltre === 'Toutes' ? 'Catalogue' : categorieFiltre} ({produitsFiltres.length})</h1>
-              <div className="flex gap-2">
-                <select value={villeFiltre} onChange={(e) => setVilleFiltre(e.target.value)} className="px-3 py-2 rounded-xl border text-xs bg-white">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white p-3 rounded-2xl border border-gray-100">
+              <div className="flex items-center gap-2 min-w-0">
+                <h1 className="text-sm sm:text-base font-extrabold text-gray-900 truncate">
+                  {categorieFiltre === 'Toutes' ? 'Catalogue' : categorieFiltre}
+                </h1>
+                <span className="px-2 py-0.5 rounded-full bg-[#fff1f0] text-[#e02e24] text-[11px] font-extrabold shrink-0">
+                  {produitsFiltres.length}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <select
+                  value={villeFiltre}
+                  onChange={(e) => setVilleFiltre(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-full border border-gray-200 focus:border-[#e02e24] text-xs font-semibold text-gray-700 bg-[#f8f8fa] outline-none"
+                >
                   <option value="Toutes">Toutes les villes</option>
                   {VILLES_MADAGASCAR.map((v) => <option key={v.nom} value={v.nom}>{v.nom}</option>)}
                 </select>
-                <select value={triCatalogue} onChange={(e) => setTriCatalogue(e.target.value)} className="px-3 py-2 rounded-xl border text-xs bg-white">
+                <select
+                  value={triCatalogue}
+                  onChange={(e) => setTriCatalogue(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-full border border-gray-200 focus:border-[#e02e24] text-xs font-semibold text-gray-700 bg-[#f8f8fa] outline-none"
+                >
                   <option value="recent">Récents</option>
                   <option value="prix_asc">Prix ↑</option>
                   <option value="prix_desc">Prix ↓</option>
@@ -1450,81 +1588,118 @@ export default function App() {
                 </select>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-              {produitsFiltres.map((p) => <CarteProduit key={p.id} produit={p} />)}
-            </div>
+
+            {produitsFiltres.length === 0 ? (
+              <div className="bg-white rounded-2xl p-6 border border-gray-100 text-center space-y-2.5">
+                <p className="text-sm font-extrabold text-gray-900">Aucun article trouvé</p>
+                <p className="text-xs text-gray-500">Essayez une autre recherche, catégorie ou ville à Madagascar.</p>
+                <button
+                  onClick={() => { setRecherche(''); setCategorieFiltre('Toutes'); setVilleFiltre('Toutes'); }}
+                  className="px-4 py-2 rounded-full bg-[#e02e24] text-white text-xs font-bold"
+                >
+                  Réinitialiser les filtres
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                {produitsFiltres.map((p) => <CarteProduit key={p.id} produit={p} />)}
+              </div>
+            )}
           </div>
         )}
 
         {vue === 'accueil' && (
           <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
-            <section className="rounded-3xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-orange-500 text-white p-8 md:p-12 shadow-lg">
-              <div className="max-w-2xl space-y-4">
-                <span className="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-bold">{BRAND} • Madagascar</span>
-                <h1 className="text-3xl md:text-5xl font-extrabold leading-tight">Achetez et vendez partout à Madagascar.</h1>
-                <p className="text-sm md:text-base text-emerald-50">MVola, Orange Money, Airtel Money, virement ou paiement à la livraison. Livraison à domicile ou point relais.</p>
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <button onClick={() => setVue('catalogue')} className="px-6 py-3 rounded-2xl bg-white text-emerald-800 font-extrabold text-sm">Explorer</button>
-                  <button onClick={() => setVue('vendeur')} className="px-6 py-3 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-extrabold text-sm">Créer ma boutique</button>
+            <section className="rounded-2xl bg-gradient-to-r from-[#e02e24] via-[#ef4444] to-[#ff6b35] text-white p-4 sm:p-6 shadow-sm">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-1">
+                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-bold">
+                    <span>⚡ Offres Flash</span>
+                    <span>•</span>
+                    <span>{BRAND} Madagascar</span>
+                  </div>
+                  <h1 className="text-lg sm:text-2xl font-extrabold leading-snug">Prix directs & livraison rapide partout à Madagascar</h1>
+                  <p className="text-xs text-white/90">Orange Money, MVola, Airtel Money ou paiement à la livraison.</p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button onClick={() => setVue('catalogue')} className="px-4 py-2 rounded-full bg-white text-[#e02e24] font-extrabold text-xs shadow-sm">Explorer</button>
+                  <button onClick={() => setVue('vendeur')} className="px-4 py-2 rounded-full bg-black/20 hover:bg-black/30 text-white font-bold text-xs">Vendre</button>
                 </div>
               </div>
             </section>
 
-            <section>
-              <h2 className="text-lg font-extrabold mb-4">Catégories</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                {CATEGORIES.map((cat) => (
-                  <button key={cat} onClick={() => { setCategorieFiltre(cat); setVue('catalogue'); }} className="bg-white p-4 rounded-2xl border border-gray-100 hover:border-emerald-500 text-left">
-                    <span className="text-xs font-bold text-gray-800 line-clamp-2">{cat}</span>
-                    <span className="block text-[11px] text-gray-400 mt-1">{produits.filter((p) => p.categorie === cat).length} article(s)</span>
+            <section className="bg-white rounded-2xl p-3 border border-gray-100">
+              <div className="grid grid-cols-5 gap-2 text-center">
+                {[
+                  { label: 'Promos', tag: '-50%', bg: 'bg-[#fff1f0] text-[#e02e24]', action: () => setVue('catalogue') },
+                  { label: 'Livraison', tag: '24-48h', bg: 'bg-emerald-50 text-emerald-700', action: () => setVue('catalogue') },
+                  { label: 'Boutiques', tag: 'Pro', bg: 'bg-amber-50 text-amber-700', action: () => setVue('vendeur') },
+                  { label: 'Commandes', tag: 'Suivi', bg: 'bg-blue-50 text-blue-700', action: () => { setOngletClient('commandes'); setVue(utilisateurActif ? 'client' : 'auth'); } },
+                  { label: 'Favoris', tag: '♥', bg: 'bg-pink-50 text-pink-600', action: () => { setOngletClient('favoris'); setVue(utilisateurActif ? 'client' : 'auth'); } },
+                ].map((item) => (
+                  <button key={item.label} onClick={item.action} className="flex flex-col items-center gap-1 py-1">
+                    <span className={`w-10 h-10 rounded-2xl ${item.bg} flex items-center justify-center text-xs font-extrabold`}>{item.tag}</span>
+                    <span className="text-[11px] font-medium text-gray-700 truncate w-full">{item.label}</span>
                   </button>
                 ))}
               </div>
             </section>
 
             {produits.length === 0 ? (
-              <section className="bg-white rounded-3xl p-10 border text-center space-y-3">
-                <h2 className="text-xl font-extrabold">{BRAND} est prêt</h2>
-                <p className="text-sm text-gray-500">Créez votre boutique dans l'espace vendeur et publiez vos premiers produits.</p>
-                <button onClick={() => setVue('vendeur')} className="px-6 py-3 rounded-2xl bg-emerald-600 text-white font-bold text-sm">Ouvrir ma boutique</button>
+              <section className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 text-center space-y-2.5">
+                <h2 className="text-base sm:text-lg font-extrabold text-gray-900">{BRAND} est prêt</h2>
+                <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">Créez votre boutique dans l'espace vendeur et publiez vos premiers produits pour Madagascar.</p>
+                <button onClick={() => setVue('vendeur')} className="px-5 py-2 rounded-full bg-[#e02e24] hover:bg-[#c42118] text-white font-bold text-xs shadow-sm">Ouvrir ma boutique</button>
               </section>
             ) : (
-              <>
+              <div className="space-y-5">
                 {produitsPromo.length > 0 && (
-                  <section>
-                    <h2 className="text-lg font-extrabold mb-4">Promotions</h2>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                      {produitsPromo.slice(0, 5).map((p) => <CarteProduit key={p.id} produit={p} />)}
+                  <section className="bg-white rounded-2xl p-3 border border-gray-100">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2 py-0.5 rounded bg-[#e02e24] text-white text-[10px] font-extrabold uppercase">Flash</span>
+                        <h2 className="text-sm font-extrabold text-gray-900">Promotions</h2>
+                      </div>
+                      <button onClick={() => setVue('catalogue')} className="text-[11px] font-bold text-[#e02e24]">Tout voir ›</button>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                      {produitsPromo.slice(0, 6).map((p) => <CarteProduit key={p.id} produit={p} />)}
                     </div>
                   </section>
                 )}
-                <section>
-                  <h2 className="text-lg font-extrabold mb-4">Nouveaux produits</h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <section className="bg-white rounded-2xl p-3 border border-gray-100">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h2 className="text-sm font-extrabold text-gray-900">Nouveaux produits</h2>
+                    <button onClick={() => setVue('catalogue')} className="text-[11px] font-bold text-[#e02e24]">Tout voir ›</button>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                     {nouveauxProduits.map((p) => <CarteProduit key={p.id} produit={p} />)}
                   </div>
                 </section>
-                <section>
-                  <h2 className="text-lg font-extrabold mb-4">Meilleures ventes</h2>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <section className="bg-white rounded-2xl p-3 border border-gray-100">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h2 className="text-sm font-extrabold text-gray-900">Meilleures ventes</h2>
+                    <button onClick={() => setVue('catalogue')} className="text-[11px] font-bold text-[#e02e24]">Tout voir ›</button>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
                     {meilleuresVentes.map((p) => <CarteProduit key={p.id} produit={p} />)}
                   </div>
                 </section>
-              </>
+              </div>
             )}
 
             {boutiques.length > 0 && (
               <section>
                 <h2 className="text-lg font-extrabold mb-4">Boutiques populaires</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
                   {boutiques.map((b) => (
-                    <div key={b.id} onClick={() => { setBoutiqueSelectionneeId(b.id); setVue('boutique'); }} className="bg-white p-5 rounded-2xl border cursor-pointer flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-emerald-50 overflow-hidden flex items-center justify-center">
-                        {b.logo ? <img src={b.logo} alt="" className="w-full h-full object-cover" /> : <Store className="w-6 h-6 text-emerald-700" />}
+                    <div key={b.id} onClick={() => { setBoutiqueSelectionneeId(b.id); setVue('boutique'); }} className="bg-white p-3 rounded-2xl border border-gray-100 hover:border-[#e02e24]/40 cursor-pointer flex items-center gap-2.5">
+                      <div className="w-10 h-10 rounded-xl bg-[#fff1f0] overflow-hidden flex items-center justify-center shrink-0">
+                        {b.logo ? <img src={b.logo} alt="" className="w-full h-full object-cover" /> : <Store className="w-5 h-5 text-[#e02e24]" />}
                       </div>
-                      <div>
-                        <p className="font-bold text-sm">{b.nom}</p>
-                        <p className="text-xs text-gray-500">{b.ville}</p>
+                      <div className="min-w-0">
+                        <p className="font-bold text-xs sm:text-sm text-gray-900 truncate">{b.nom}</p>
+                        <p className="text-[11px] text-gray-500 truncate">{b.ville}</p>
                       </div>
                     </div>
                   ))}
@@ -1535,12 +1710,58 @@ export default function App() {
         )}
       </main>
 
-      <footer className="bg-white border-t mt-12 py-6 px-4 text-xs text-gray-500">
+      <footer className="bg-white border-t border-gray-100 mt-10 py-6 px-4 pb-24 md:pb-6 text-xs text-gray-500">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
           <LogoMarque onClick={() => setVue('accueil')} />
           <p>© {new Date().getFullYear()} {BRAND} — Madagascar</p>
         </div>
       </footer>
+
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 px-2 py-1.5">
+        <div className="grid grid-cols-5 items-center text-[10px] font-semibold">
+          <button
+            onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }}
+            className={`flex flex-col items-center py-1 ${vue === 'accueil' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+          >
+            <span>Accueil</span>
+          </button>
+
+          <button
+            onClick={() => setVue('catalogue')}
+            className={`flex flex-col items-center py-1 ${vue === 'catalogue' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+          >
+            <span>Catalogue</span>
+          </button>
+
+          <button
+            onClick={() => setVue('vendeur')}
+            className={`flex flex-col items-center py-1 ${vue === 'vendeur' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+          >
+            <span className="px-2.5 py-0.5 rounded-full bg-[#e02e24] text-white text-[10px] font-extrabold">Vendre</span>
+          </button>
+
+          <button
+            onClick={() => setVue('panier')}
+            className={`relative flex flex-col items-center py-1 ${vue === 'panier' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+          >
+            <span className="relative inline-flex items-center justify-center">
+              <span>Panier</span>
+              {panier.reduce((s, i) => s + i.quantite, 0) > 0 && (
+                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-[#e02e24] text-white text-[9px] font-extrabold">
+                  {panier.reduce((s, i) => s + i.quantite, 0)}
+                </span>
+              )}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setVue(utilisateurActif ? 'client' : 'auth')}
+            className={`flex flex-col items-center py-1 ${vue === 'client' || vue === 'auth' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+          >
+            <span>{utilisateurActif ? utilisateurActif.nom.split(' ')[0] : 'Compte'}</span>
+          </button>
+        </div>
+      </nav>
     </div>
   );
 }
