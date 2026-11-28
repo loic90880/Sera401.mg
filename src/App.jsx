@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Search, ShoppingCart, User, Store, Heart, Bell, Plus, Trash2, Edit3,
   CheckCircle, Truck, Package, CreditCard, MapPin, Star, DollarSign,
-  AlertCircle, Eye, LogOut, ShieldCheck, Tag
+  AlertCircle, Eye, LogOut, ShieldCheck, Tag,
+  ArrowUpRight, Menu, Sun, Moon, ChevronDown, Sparkles, Flame, Layers, ChevronLeft
 } from 'lucide-react';
 
 const BRAND = 'sera 401.mg';
@@ -50,7 +51,7 @@ const STATUTS_COMMANDE = [
 ];
 
 const formatMGA = (montant) =>
-  new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(Number(montant) || 0) + ' Ar';
+  new Intl.NumberFormat('fr-MG', { maximumFractionDigits: 0 }).format(Number(montant) || 0) + ' MGA';
 
 const lireFichierBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -72,11 +73,11 @@ const chargerStorage = (cle, defaut) => {
 
 const LogoMarque = ({ onClick }) => (
   <button onClick={onClick} className="flex items-center text-left focus:outline-none shrink-0 group">
-    <span className="inline-flex items-center justify-center rounded-xl bg-[#fff1f0] border border-[#e02e24]/25 px-1.5 py-1 shadow-2xs group-hover:border-[#e02e24]/50 transition-colors">
+    <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-white border-2 border-[#ef233c] p-1 shadow-sm group-hover:scale-105 transition-transform">
       <img
         src="/logo-401.png"
         alt={BRAND}
-        className="h-7 sm:h-8 w-auto max-w-[110px] sm:max-w-[140px] object-contain rounded-md"
+        className="w-full h-full object-contain rounded-md"
       />
     </span>
   </button>
@@ -129,6 +130,14 @@ export default function App() {
   const [ongletClient, setOngletClient] = useState('commandes');
   const [ongletVendeur, setOngletVendeur] = useState('apercu');
   const [toast, setToast] = useState(null);
+  const [themeClair, setThemeClair] = useState(() => chargerStorage('themeLight', false));
+  const [menuOutilsOuvert, setMenuOutilsOuvert] = useState(false);
+  const [rechercheOuverte, setRechercheOuverte] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('sera401mg_themeLight', JSON.stringify(themeClair));
+    document.documentElement.classList.toggle('theme-light', themeClair);
+  }, [themeClair]);
 
   useEffect(() => { localStorage.setItem('sera401mg_users', JSON.stringify(utilisateurs)); }, [utilisateurs]);
   useEffect(() => { localStorage.setItem('sera401mg_currentUser', JSON.stringify(utilisateurActif)); }, [utilisateurActif]);
@@ -224,58 +233,83 @@ export default function App() {
     const noteMoyenne = avisProduit.length ? (avisProduit.reduce((s, a) => s + a.note, 0) / avisProduit.length).toFixed(1) : null;
 
     return (
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-lg transition-all overflow-hidden flex flex-col group">
-        <div onClick={() => { setProduitSelectionneId(produit.id); setVue('produit'); }} className="relative aspect-square bg-gray-100 overflow-hidden cursor-pointer">
-          {produit.image ? (
-            <img src={produit.image} alt={produit.nom} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          ) : (
-            <div className="w-full h-full flex flex-col items-center justify-center text-gray-400 p-4">
-              <Package className="w-10 h-10 mb-1" />
-              <span className="text-xs text-center">{produit.categorie}</span>
-            </div>
-          )}
-          {produit.promo > 0 && (
-            <span className="absolute top-2 left-2 bg-[#e02e24] text-white text-[11px] font-extrabold px-2 py-0.5 rounded shadow-sm">-{produit.promo}%</span>
-          )}
-          {produit.stock <= 0 && (
-            <span className="absolute inset-0 bg-black/55 text-white font-bold text-xs flex items-center justify-center">Épuisé</span>
-          )}
-          <button onClick={(e) => { e.stopPropagation(); basculerFavori(produit.id); }} className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 shadow-sm flex items-center justify-center">
-            <Heart className={`w-3.5 h-3.5 ${estFavori(produit.id) ? 'fill-[#e02e24] text-[#e02e24]' : 'text-gray-500'}`} />
-          </button>
-        </div>
-
-        <div className="p-2.5 flex-1 flex flex-col justify-between bg-white">
-          <div>
-            <h3 onClick={() => { setProduitSelectionneId(produit.id); setVue('produit'); }} className="font-medium text-gray-800 text-xs sm:text-sm line-clamp-2 cursor-pointer hover:text-[#e02e24] mb-1 leading-snug">
-              {produit.nom}
-            </h3>
-            <div className="flex flex-wrap items-center gap-1 text-[10px] text-gray-500 mb-1.5">
-              <span className="px-1.5 py-0.5 rounded bg-[#fff1f0] text-[#e02e24] font-semibold truncate max-w-[55%]">{boutique?.nom || 'Boutique'}</span>
-              <span className="inline-flex items-center gap-0.5 text-gray-500"><MapPin className="w-2.5 h-2.5" /> {produit.ville}</span>
-              {noteMoyenne && (
-                <span className="inline-flex items-center gap-0.5 text-amber-500 font-semibold">
-                  <Star className="w-2.5 h-2.5 fill-amber-400" />{noteMoyenne}
+      <div className="bg-[var(--bg-card)] rounded-2xl border border-[var(--border-light)] hover:border-[#ef233c]/50 shadow-sm transition-all overflow-hidden flex flex-col justify-between p-2.5 group">
+        <div>
+          <div className="relative mb-3">
+            <div
+              onClick={() => { setProduitSelectionneId(produit.id); setVue('produit'); }}
+              className="relative aspect-[16/11] rounded-xl bg-[#16161a] overflow-hidden cursor-pointer"
+            >
+              {produit.image ? (
+                <img src={produit.image} alt={produit.nom} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 p-3">
+                  <Package className="w-8 h-8 mb-1" />
+                  <span className="text-[11px] text-center line-clamp-1">{produit.categorie}</span>
+                </div>
+              )}
+              {produit.promo > 0 && (
+                <span className="absolute top-2 left-2 bg-[#ef233c] text-white text-[10px] font-extrabold px-2 py-0.5 rounded-md shadow">
+                  -{produit.promo}%
                 </span>
               )}
+              {produit.stock <= 0 && (
+                <span className="absolute inset-0 bg-black/65 text-white font-bold text-xs flex items-center justify-center">
+                  Épuisé
+                </span>
+              )}
+              <button
+                onClick={(e) => { e.stopPropagation(); basculerFavori(produit.id); }}
+                title="Favoris"
+                className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/55 backdrop-blur-xs flex items-center justify-center"
+              >
+                <Heart className={`w-3.5 h-3.5 ${estFavori(produit.id) ? 'fill-[#ef233c] text-[#ef233c]' : 'text-white/85'}`} />
+              </button>
             </div>
-          </div>
-          <div className="pt-1.5">
-            <div className="flex items-baseline justify-between gap-1 mb-2">
-              <div className="flex items-baseline gap-1.5 min-w-0">
-                <span className="text-sm sm:text-base font-extrabold text-[#e02e24] truncate">{formatMGA(prixFinal)}</span>
-                {produit.promo > 0 && <span className="text-[10px] text-gray-400 line-through truncate">{formatMGA(produit.prix)}</span>}
-              </div>
-              <span className="text-[10px] text-gray-400 shrink-0">{produit.ventes || 0} vendus</span>
-            </div>
+
             <button
-              onClick={() => ajouterAuPanier(produit, 1)}
-              disabled={produit.stock <= 0}
-              className="w-full py-1.5 px-2.5 rounded-lg bg-[#e02e24] hover:bg-[#c42118] active:scale-[0.99] disabled:bg-gray-200 disabled:text-gray-400 text-white text-xs font-bold flex items-center justify-center gap-1"
+              onClick={() => { setProduitSelectionneId(produit.id); setVue('produit'); }}
+              aria-label="Voir l'annonce"
+              className="absolute -bottom-3 right-2 w-9 h-9 rounded-full bg-[#ef233c] hover:bg-[#c8162c] active:scale-95 text-white shadow-lg flex items-center justify-center transition-transform"
             >
-              <ShoppingCart className="w-3.5 h-3.5" /> Acheter
+              <ArrowUpRight className="w-4 h-4 stroke-[2.5]" />
             </button>
           </div>
+
+          <h3
+            onClick={() => { setProduitSelectionneId(produit.id); setVue('produit'); }}
+            className="font-bold text-[var(--text-main)] text-xs sm:text-sm line-clamp-2 cursor-pointer hover:text-[#ef233c] leading-snug pr-6 mb-1.5"
+          >
+            {produit.nom}
+          </h3>
+
+          <div className="flex items-baseline gap-1.5 flex-wrap mb-3">
+            <span className="text-xs sm:text-sm font-extrabold text-[var(--price-purple)]">
+              {formatMGA(prixFinal)}
+            </span>
+            {produit.promo > 0 && (
+              <span className="text-[10px] text-[var(--text-muted)] line-through">
+                {formatMGA(produit.prix)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="pt-2 border-t border-[var(--border-light)]/70 flex items-center justify-between gap-1.5">
+          <div className="flex items-center gap-1.5 min-w-0 text-[11px] text-[var(--text-muted)]">
+            <span className="w-3.5 h-3.5 rounded-full border border-[#ef233c] flex items-center justify-center shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ef233c]" />
+            </span>
+            <span className="truncate">{produit.categorie} • {produit.ville}</span>
+          </div>
+          <button
+            onClick={() => ajouterAuPanier(produit, 1)}
+            disabled={produit.stock <= 0}
+            title="Ajouter au panier"
+            className="shrink-0 p-1.5 rounded-lg bg-[var(--brand-soft)] hover:bg-[#ef233c] text-[#ef233c] hover:text-white disabled:opacity-40 transition-colors"
+          >
+            <ShoppingCart className="w-3.5 h-3.5" />
+          </button>
         </div>
       </div>
     );
@@ -1424,84 +1458,159 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-800 flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] flex flex-col transition-colors">
       {toast && (
-        <div className={`fixed bottom-5 right-5 z-50 px-5 py-3 rounded-2xl shadow-xl text-white text-xs font-bold flex items-center gap-2 ${toast.type === 'erreur' ? 'bg-red-600' : 'bg-emerald-700'}`}>
+        <div className={`fixed bottom-20 md:bottom-6 right-4 z-50 px-4 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold flex items-center gap-2 ${toast.type === 'erreur' ? 'bg-red-600' : 'bg-emerald-600'}`}>
           <CheckCircle className="w-4 h-4" /> {toast.message}
         </div>
       )}
 
-      <header className="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 pt-2.5 pb-2 flex items-center justify-between gap-2">
-          <LogoMarque onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }} />
+      <header className="bg-[var(--bg-surface)] border-b border-[var(--border-light)] sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <LogoMarque onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }} />
 
-          <div className="flex-1 max-w-xl flex items-center bg-[#f3f4f6] border border-[#e02e24]/30 rounded-full px-3 py-1.5">
-            <Search className="w-4 h-4 text-[#e02e24] mr-1.5 shrink-0" />
-            <input
-              type="text"
-              value={recherche}
-              onChange={(e) => { setRecherche(e.target.value); if (vue !== 'catalogue') setVue('catalogue'); }}
-              placeholder={`Rechercher sur ${BRAND}...`}
-              className="w-full bg-transparent text-xs sm:text-sm text-gray-800 outline-none"
-            />
-            <select value={villeFiltre} onChange={(e) => setVilleFiltre(e.target.value)} className="text-[11px] font-bold text-[#e02e24] bg-transparent border-l border-gray-300 pl-1.5 ml-1.5 outline-none max-w-[95px] sm:max-w-none">
-              <option value="Toutes">Madagascar</option>
-              {VILLES_MADAGASCAR.map((v) => <option key={v.nom} value={v.nom}>{v.nom}</option>)}
-            </select>
+            <button
+              onClick={() => setVue(vue === 'catalogue' ? 'accueil' : 'catalogue')}
+              aria-label="Catalogue et catégories"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-colors"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            <button
+              onClick={() => setRechercheOuverte((v) => !v)}
+              aria-label="Rechercher"
+              className="w-9 h-9 rounded-full bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center justify-center text-[var(--text-main)] hover:border-[#ef233c]/50"
+            >
+              <Search className="w-4 h-4" />
+            </button>
+
+            <div className="relative">
+              <button
+                onClick={() => setMenuOutilsOuvert((v) => !v)}
+                className="h-9 px-3 rounded-full bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center gap-1.5 text-xs font-bold text-[var(--text-main)] hover:border-[#ef233c]/50"
+              >
+                <span className="grid grid-cols-2 gap-0.5">
+                  <span className="w-1.5 h-1.5 rounded-[2px] bg-[#ef233c]" />
+                  <span className="w-1.5 h-1.5 rounded-[2px] bg-[#ef233c]" />
+                  <span className="w-1.5 h-1.5 rounded-[2px] bg-[#ef233c]" />
+                  <span className="w-1.5 h-1.5 rounded-[2px] bg-[#ef233c]" />
+                </span>
+                <span>Outils</span>
+                <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+              </button>
+
+              {menuOutilsOuvert && (
+                <div
+                  onMouseLeave={() => setMenuOutilsOuvert(false)}
+                  className="absolute left-0 mt-2 w-52 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-light)] shadow-2xl p-1.5 z-50 text-xs font-semibold space-y-1"
+                >
+                  <button onClick={() => { setMenuOutilsOuvert(false); setVue('catalogue'); }} className="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--brand-soft)] flex items-center justify-between">
+                    <span>Toutes les annonces</span>
+                    <span className="text-[#ef233c] font-bold">{produits.length}</span>
+                  </button>
+                  <button onClick={() => { setMenuOutilsOuvert(false); setVue('vendeur'); }} className="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--brand-soft)] flex items-center justify-between">
+                    <span>Espace Vendeur</span>
+                    <Store className="w-3.5 h-3.5 text-[#ef233c]" />
+                  </button>
+                  <button onClick={() => { setMenuOutilsOuvert(false); setVue('panier'); }} className="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--brand-soft)] flex items-center justify-between">
+                    <span>Mon Panier</span>
+                    <span className="px-1.5 py-0.5 rounded-full bg-[#ef233c] text-white text-[10px]">{panier.reduce((s, i) => s + i.quantite, 0)}</span>
+                  </button>
+                  <button onClick={() => { setMenuOutilsOuvert(false); setOngletClient('commandes'); setVue(utilisateurActif ? 'client' : 'auth'); }} className="w-full text-left px-3 py-2 rounded-xl hover:bg-[var(--brand-soft)] flex items-center justify-between">
+                    <span>Suivi commandes</span>
+                    <Truck className="w-3.5 h-3.5 text-[var(--price-purple)]" />
+                  </button>
+                  {utilisateurActif?.role === 'admin' && (
+                    <button onClick={() => { setMenuOutilsOuvert(false); setVue('admin'); }} className="w-full text-left px-3 py-2 rounded-xl bg-[#ef233c]/15 text-[#ef233c] font-bold">
+                      Administration
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-2">
-            <button onClick={() => setVue('vendeur')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff1f0] text-[#e02e24] text-xs font-bold">
-              <Store className="w-3.5 h-3.5" /> Vendeur
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setThemeClair((v) => !v)}
+              aria-label="Changer le thème"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--text-main)] hover:bg-[var(--bg-card)]"
+            >
+              {themeClair ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
-            {utilisateurActif ? (
-              <>
-                <button onClick={() => { setOngletClient('notifications'); setVue('client'); }} className="relative p-2 rounded-full bg-gray-100">
-                  <Bell className="w-4 h-4 text-gray-700" />
-                </button>
-                {utilisateurActif?.role === "admin" && (
-                  <button onClick={() => setVue("admin")} className="px-3 py-1.5 rounded-full bg-gray-900 text-white text-xs font-bold">
-                    Admin
-                  </button>
-                )}
-                <button onClick={() => setVue('client')} className="px-3 py-1.5 rounded-full bg-[#fff1f0] text-[#e02e24] text-xs font-bold flex items-center gap-1">
-                  <User className="w-3.5 h-3.5" /> {utilisateurActif.nom.split(' ')[0]}
-                </button>
-                <button onClick={() => { setUtilisateurActif(null); setVue('accueil'); }} className="p-2 rounded-full text-gray-400 hover:text-[#e02e24]">
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </>
-            ) : (
-              <button onClick={() => setVue('auth')} className="px-4 py-1.5 rounded-full bg-[#e02e24] text-white text-xs font-bold">Connexion</button>
-            )}
-            <button onClick={() => setVue('panier')} className="relative p-2 rounded-full bg-[#e02e24] text-white">
+
+            <button
+              onClick={() => setVue('panier')}
+              aria-label="Panier"
+              className="relative w-9 h-9 rounded-xl bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center justify-center text-[var(--text-main)]"
+            >
               <ShoppingCart className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full bg-gray-900 text-white text-[10px] font-bold flex items-center justify-center">
-                {panier.reduce((s, i) => s + i.quantite, 0)}
-              </span>
+              {panier.reduce((s, i) => s + i.quantite, 0) > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[17px] h-[17px] px-1 rounded-full bg-[#ef233c] text-white text-[10px] font-extrabold flex items-center justify-center">
+                  {panier.reduce((s, i) => s + i.quantite, 0)}
+                </span>
+              )}
+            </button>
+
+            <div className="h-6 w-[1px] bg-[var(--border-light)] hidden sm:block" />
+
+            <button
+              onClick={() => setVue(utilisateurActif ? 'client' : 'auth')}
+              aria-label="Compte utilisateur"
+              className="h-9 px-2.5 rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] hover:border-[#ef233c] flex items-center gap-1.5 text-xs font-bold"
+            >
+              <User className="w-4 h-4" />
+              {utilisateurActif && <span className="hidden sm:inline">{utilisateurActif.nom.split(' ')[0]}</span>}
             </button>
           </div>
         </div>
 
-        <nav className="bg-white overflow-x-auto no-scrollbar">
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 flex items-center gap-4 whitespace-nowrap text-xs sm:text-sm">
+        {(rechercheOuverte || vue === 'catalogue') && (
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 pb-2.5">
+            <div className="flex items-center bg-[var(--bg-card)] border border-[var(--border-light)] focus-within:border-[#ef233c] rounded-full px-3 py-1.5">
+              <Search className="w-4 h-4 text-[#ef233c] mr-2 shrink-0" />
+              <input
+                type="text"
+                value={recherche}
+                onChange={(e) => { setRecherche(e.target.value); if (vue !== 'catalogue') setVue('catalogue'); }}
+                placeholder={`Rechercher un produit sur ${BRAND}...`}
+                className="w-full bg-transparent text-xs sm:text-sm text-[var(--text-main)] outline-none"
+              />
+              <select
+                value={villeFiltre}
+                onChange={(e) => setVilleFiltre(e.target.value)}
+                className="text-[11px] font-bold text-[#ef233c] bg-transparent border-l border-[var(--border-light)] pl-2 ml-2 outline-none max-w-[105px]"
+              >
+                <option value="Toutes" className="bg-[#1b1b20] text-white">Madagascar</option>
+                {VILLES_MADAGASCAR.map((v) => (
+                  <option key={v.nom} value={v.nom} className="bg-[#1b1b20] text-white">{v.nom}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        <nav className="border-t border-[var(--border-light)]/60 overflow-x-auto no-scrollbar">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 flex items-center gap-4 whitespace-nowrap text-xs">
             <button
               onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }}
-              className={`py-2 border-b-2 transition-colors ${vue === 'accueil' ? 'border-[#e02e24] text-[#e02e24] font-extrabold' : 'border-transparent text-gray-600 font-medium'}`}
+              className={`py-2 border-b-2 transition-colors ${vue === 'accueil' ? 'border-[#ef233c] text-[#ef233c] font-extrabold' : 'border-transparent text-[var(--text-muted)] font-medium'}`}
             >
-              Recommandé
+              Accueil
             </button>
             <button
               onClick={() => { setCategorieFiltre('Toutes'); setVue('catalogue'); }}
-              className={`py-2 border-b-2 transition-colors ${categorieFiltre === 'Toutes' && vue === 'catalogue' ? 'border-[#e02e24] text-[#e02e24] font-extrabold' : 'border-transparent text-gray-600 font-medium'}`}
+              className={`py-2 border-b-2 transition-colors ${categorieFiltre === 'Toutes' && vue === 'catalogue' ? 'border-[#ef233c] text-[#ef233c] font-extrabold' : 'border-transparent text-[var(--text-muted)] font-medium'}`}
             >
-              Tout voir
+              Dernières annonces
             </button>
             {CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => { setCategorieFiltre(cat); setVue('catalogue'); }}
-                className={`py-2 border-b-2 transition-colors ${categorieFiltre === cat && vue === 'catalogue' ? 'border-[#e02e24] text-[#e02e24] font-extrabold' : 'border-transparent text-gray-600 font-medium'}`}
+                className={`py-2 border-b-2 transition-colors ${categorieFiltre === cat && vue === 'catalogue' ? 'border-[#ef233c] text-[#ef233c] font-extrabold' : 'border-transparent text-[var(--text-muted)] font-medium'}`}
               >
                 {cat}
               </button>
@@ -1521,9 +1630,11 @@ export default function App() {
 
         {vue === 'panier' && (
           <div className="max-w-4xl mx-auto w-full px-3 sm:px-4 py-5 sm:py-8">
-            <h1 className="text-lg sm:text-2xl font-extrabold mb-6">Panier</h1>
+            <h1 className="text-lg sm:text-2xl font-extrabold mb-6">Mon Panier</h1>
             {panier.length === 0 ? (
-              <div className="bg-white rounded-3xl p-10 text-center border">Panier vide.</div>
+              <div className="bg-[var(--bg-card)] rounded-3xl p-10 text-center border border-[var(--border-light)] text-[var(--text-muted)]">
+                Votre panier est vide.
+              </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-3">
@@ -1532,24 +1643,29 @@ export default function App() {
                     if (!prod) return null;
                     const prixFinal = prod.promo > 0 ? Math.round(prod.prix * (1 - prod.promo / 100)) : prod.prix;
                     return (
-                      <div key={item.produitId} className="bg-white p-4 rounded-2xl border flex justify-between items-center">
+                      <div key={item.produitId} className="bg-[var(--bg-card)] p-4 rounded-2xl border border-[var(--border-light)] flex justify-between items-center">
                         <div>
                           <p className="font-bold text-sm">{prod.nom}</p>
-                          <p className="text-xs font-extrabold text-emerald-700">{formatMGA(prixFinal)}</p>
+                          <p className="text-xs font-extrabold text-[var(--price-purple)]">{formatMGA(prixFinal)}</p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <button onClick={() => setPanier((prev) => prev.map((i) => i.produitId === prod.id ? { ...i, quantite: Math.max(1, i.quantite - 1) } : i))} className="w-7 h-7 rounded bg-gray-100 font-bold">-</button>
+                          <button onClick={() => setPanier((prev) => prev.map((i) => i.produitId === prod.id ? { ...i, quantite: Math.max(1, i.quantite - 1) } : i))} className="w-7 h-7 rounded bg-[var(--bg-surface)] border border-[var(--border-light)] font-bold">-</button>
                           <span className="text-xs font-bold">{item.quantite}</span>
-                          <button onClick={() => setPanier((prev) => prev.map((i) => i.produitId === prod.id ? { ...i, quantite: Math.min(prod.stock, i.quantite + 1) } : i))} className="w-7 h-7 rounded bg-gray-100 font-bold">+</button>
-                          <button onClick={() => setPanier((prev) => prev.filter((i) => i.produitId !== prod.id))} className="p-2 text-red-500"><Trash2 className="w-4 h-4" /></button>
+                          <button onClick={() => setPanier((prev) => prev.map((i) => i.produitId === prod.id ? { ...i, quantite: Math.min(prod.stock, i.quantite + 1) } : i))} className="w-7 h-7 rounded bg-[var(--bg-surface)] border border-[var(--border-light)] font-bold">+</button>
+                          <button onClick={() => setPanier((prev) => prev.filter((i) => i.produitId !== prod.id))} className="p-2 text-[#ef233c]"><Trash2 className="w-4 h-4" /></button>
                         </div>
                       </div>
                     );
                   })}
                 </div>
-                <div className="bg-white p-6 rounded-3xl border h-fit space-y-4">
-                  <div className="flex justify-between font-bold"><span>Total</span><span className="text-emerald-700">{formatMGA(totalPanier)}</span></div>
-                  <button onClick={() => setVue('checkout')} className="w-full py-3 rounded-xl bg-orange-500 text-white font-bold text-sm">Commander</button>
+                <div className="bg-[var(--bg-card)] p-6 rounded-3xl border border-[var(--border-light)] h-fit space-y-4">
+                  <div className="flex justify-between font-bold">
+                    <span>Total</span>
+                    <span className="text-[var(--price-purple)]">{formatMGA(totalPanier)}</span>
+                  </div>
+                  <button onClick={() => setVue('checkout')} className="w-full py-3 rounded-xl bg-[#ef233c] hover:bg-[#c8162c] text-white font-bold text-sm">
+                    Passer la commande
+                  </button>
                 </div>
               </div>
             )}
@@ -1557,13 +1673,13 @@ export default function App() {
         )}
 
         {vue === 'catalogue' && (
-          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2.5 bg-white p-3 rounded-2xl border border-gray-100">
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-5 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2.5 pb-3 border-b border-[var(--border-light)]">
               <div className="flex items-center gap-2 min-w-0">
-                <h1 className="text-sm sm:text-base font-extrabold text-gray-900 truncate">
-                  {categorieFiltre === 'Toutes' ? 'Catalogue' : categorieFiltre}
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight truncate">
+                  {categorieFiltre === 'Toutes' ? 'Dernières annonces' : categorieFiltre}
                 </h1>
-                <span className="px-2 py-0.5 rounded-full bg-[#fff1f0] text-[#e02e24] text-[11px] font-extrabold shrink-0">
+                <span className="px-2 py-0.5 rounded-full bg-[var(--brand-soft)] text-[#ef233c] text-xs font-extrabold shrink-0">
                   {produitsFiltres.length}
                 </span>
               </div>
@@ -1571,7 +1687,7 @@ export default function App() {
                 <select
                   value={villeFiltre}
                   onChange={(e) => setVilleFiltre(e.target.value)}
-                  className="px-2.5 py-1.5 rounded-full border border-gray-200 focus:border-[#e02e24] text-xs font-semibold text-gray-700 bg-[#f8f8fa] outline-none"
+                  className="px-3 py-1.5 rounded-full border border-[var(--border-light)] text-xs font-semibold bg-[var(--bg-card)] text-[var(--text-main)] outline-none"
                 >
                   <option value="Toutes">Toutes les villes</option>
                   {VILLES_MADAGASCAR.map((v) => <option key={v.nom} value={v.nom}>{v.nom}</option>)}
@@ -1579,29 +1695,29 @@ export default function App() {
                 <select
                   value={triCatalogue}
                   onChange={(e) => setTriCatalogue(e.target.value)}
-                  className="px-2.5 py-1.5 rounded-full border border-gray-200 focus:border-[#e02e24] text-xs font-semibold text-gray-700 bg-[#f8f8fa] outline-none"
+                  className="px-3 py-1.5 rounded-full border border-[var(--border-light)] text-xs font-semibold bg-[var(--bg-card)] text-[var(--text-main)] outline-none"
                 >
                   <option value="recent">Récents</option>
                   <option value="prix_asc">Prix ↑</option>
                   <option value="prix_desc">Prix ↓</option>
-                  <option value="ventes">Ventes</option>
+                  <option value="ventes">Populaires</option>
                 </select>
               </div>
             </div>
 
             {produitsFiltres.length === 0 ? (
-              <div className="bg-white rounded-2xl p-6 border border-gray-100 text-center space-y-2.5">
-                <p className="text-sm font-extrabold text-gray-900">Aucun article trouvé</p>
-                <p className="text-xs text-gray-500">Essayez une autre recherche, catégorie ou ville à Madagascar.</p>
+              <div className="bg-[var(--bg-card)] rounded-2xl p-8 border border-[var(--border-light)] text-center space-y-3">
+                <p className="text-sm font-extrabold">Aucun article trouvé</p>
+                <p className="text-xs text-[var(--text-muted)]">Essayez une autre recherche, catégorie ou ville à Madagascar.</p>
                 <button
                   onClick={() => { setRecherche(''); setCategorieFiltre('Toutes'); setVilleFiltre('Toutes'); }}
-                  className="px-4 py-2 rounded-full bg-[#e02e24] text-white text-xs font-bold"
+                  className="px-4 py-2 rounded-full bg-[#ef233c] text-white text-xs font-bold"
                 >
                   Réinitialiser les filtres
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                 {produitsFiltres.map((p) => <CarteProduit key={p.id} produit={p} />)}
               </div>
             )}
@@ -1609,79 +1725,150 @@ export default function App() {
         )}
 
         {vue === 'accueil' && (
-          <div className="max-w-7xl mx-auto px-4 py-6 space-y-10">
-            <section className="rounded-2xl bg-gradient-to-r from-[#e02e24] via-[#ef4444] to-[#ff6b35] text-white p-4 sm:p-6 shadow-sm">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/20 text-[11px] font-bold">
-                    <span>⚡ Offres Flash</span>
-                    <span>•</span>
-                    <span>{BRAND} Madagascar</span>
-                  </div>
-                  <h1 className="text-lg sm:text-2xl font-extrabold leading-snug">Prix directs & livraison rapide partout à Madagascar</h1>
-                  <p className="text-xs text-white/90">Orange Money, MVola, Airtel Money ou paiement à la livraison.</p>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <button onClick={() => setVue('catalogue')} className="px-4 py-2 rounded-full bg-white text-[#e02e24] font-extrabold text-xs shadow-sm">Explorer</button>
-                  <button onClick={() => setVue('vendeur')} className="px-4 py-2 rounded-full bg-black/20 hover:bg-black/30 text-white font-bold text-xs">Vendre</button>
-                </div>
+          <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-8">
+            {/* Grille 2 colonnes de tuiles rubriques inspirée des captures, adaptée à sera 401.mg */}
+            <section className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3.5">
+              <div
+                onClick={() => setVue('catalogue')}
+                className="rounded-2xl bg-[#181214] border border-[#ef233c]/25 p-4 flex flex-col justify-between min-h-[104px] cursor-pointer hover:border-[#ef233c] transition-colors"
+              >
+                <span className="text-xs font-extrabold tracking-wide text-[#ef233c] uppercase">{BRAND}</span>
+                <p className="text-xs sm:text-sm font-semibold text-gray-200 leading-snug">
+                  Tout Madagascar, en continu.
+                </p>
               </div>
+
+              <button
+                onClick={() => setVue('catalogue')}
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#9e4747] via-[#b8564f] to-[#6b2d2d] p-4 flex flex-col justify-between min-h-[104px] text-left group"
+              >
+                <Flame className="w-10 h-10 text-white/90 mx-auto my-auto group-hover:scale-110 transition-transform" />
+                <span className="text-xs sm:text-sm font-extrabold text-white">Offres Flash</span>
+              </button>
+
+              <button
+                onClick={() => { setCategorieFiltre('Toutes'); setVue('catalogue'); }}
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#c96a73] via-[#9c4152] to-[#592533] p-4 flex flex-col justify-between min-h-[104px] text-left group"
+              >
+                <Tag className="w-10 h-10 text-white/90 mx-auto my-auto group-hover:scale-110 transition-transform" />
+                <span className="text-xs sm:text-sm font-extrabold text-white">Annonces</span>
+              </button>
+
+              <button
+                onClick={() => setVue('vendeur')}
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#4d6366] via-[#374a4d] to-[#263436] p-4 flex flex-col justify-between min-h-[104px] text-left group"
+              >
+                <Store className="w-10 h-10 text-amber-300 mx-auto my-auto group-hover:scale-110 transition-transform" />
+                <span className="text-xs sm:text-sm font-extrabold text-white">Boutiques Pro</span>
+              </button>
+
+              <button
+                onClick={() => { setOngletClient('commandes'); setVue(utilisateurActif ? 'client' : 'auth'); }}
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#2d3e59] via-[#1f2c42] to-[#151e2e] p-4 flex flex-col justify-between min-h-[104px] text-left group"
+              >
+                <Truck className="w-10 h-10 text-white/90 mx-auto my-auto group-hover:scale-110 transition-transform" />
+                <span className="text-xs sm:text-sm font-extrabold text-white">Livraison & Suivi</span>
+              </button>
+
+              <button
+                onClick={() => setVue('vendeur')}
+                className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#ff2a2a] to-[#cc1414] p-4 flex flex-col justify-between min-h-[104px] text-left group shadow-md"
+              >
+                <Plus className="w-10 h-10 text-white mx-auto my-auto group-hover:scale-110 transition-transform" />
+                <span className="text-xs sm:text-sm font-extrabold text-white">Vendre</span>
+              </button>
             </section>
 
-            <section className="bg-white rounded-2xl p-3 border border-gray-100">
-              <div className="grid grid-cols-5 gap-2 text-center">
-                {[
-                  { label: 'Promos', tag: '-50%', bg: 'bg-[#fff1f0] text-[#e02e24]', action: () => setVue('catalogue') },
-                  { label: 'Livraison', tag: '24-48h', bg: 'bg-emerald-50 text-emerald-700', action: () => setVue('catalogue') },
-                  { label: 'Boutiques', tag: 'Pro', bg: 'bg-amber-50 text-amber-700', action: () => setVue('vendeur') },
-                  { label: 'Commandes', tag: 'Suivi', bg: 'bg-blue-50 text-blue-700', action: () => { setOngletClient('commandes'); setVue(utilisateurActif ? 'client' : 'auth'); } },
-                  { label: 'Favoris', tag: '♥', bg: 'bg-pink-50 text-pink-600', action: () => { setOngletClient('favoris'); setVue(utilisateurActif ? 'client' : 'auth'); } },
-                ].map((item) => (
-                  <button key={item.label} onClick={item.action} className="flex flex-col items-center gap-1 py-1">
-                    <span className={`w-10 h-10 rounded-2xl ${item.bg} flex items-center justify-center text-xs font-extrabold`}>{item.tag}</span>
-                    <span className="text-[11px] font-medium text-gray-700 truncate w-full">{item.label}</span>
+            {/* Carte À la une / Paiement & Marketplace */}
+            <section className="rounded-3xl bg-[var(--bg-card)] border border-[var(--border-light)] p-3.5 sm:p-4 flex items-center justify-between gap-3">
+              <div className="space-y-1.5 min-w-0 flex-1">
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-extrabold text-[#ef233c] uppercase tracking-wider">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>À la une • {BRAND}</span>
+                </div>
+                <h2 className="text-base sm:text-lg font-extrabold leading-snug text-[var(--text-main)]">
+                  Achetez et vendez partout à Madagascar avec Orange Money, MVola et Airtel Money
+                </h2>
+                <div className="flex items-center gap-2 pt-1">
+                  <button
+                    onClick={() => setVue('catalogue')}
+                    className="w-7 h-7 rounded-full bg-white text-[#111114] flex items-center justify-center shadow"
+                  >
+                    <ArrowUpRight className="w-3.5 h-3.5" />
                   </button>
-                ))}
+                  <span className="w-6 h-1.5 rounded-full bg-[#ef233c]" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-600" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-600" />
+                </div>
               </div>
+
+              <button
+                onClick={() => setVue('vendeur')}
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-[#cc1829] hover:bg-[#ef233c] text-white flex flex-col items-center justify-center gap-1 shrink-0 shadow-lg transition-colors"
+              >
+                <Store className="w-7 h-7" />
+                <span className="text-[11px] font-extrabold">Publier</span>
+              </button>
             </section>
 
+            {/* Section Dernières annonces */}
             {produits.length === 0 ? (
-              <section className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 text-center space-y-2.5">
-                <h2 className="text-base sm:text-lg font-extrabold text-gray-900">{BRAND} est prêt</h2>
-                <p className="text-xs sm:text-sm text-gray-500 max-w-md mx-auto">Créez votre boutique dans l'espace vendeur et publiez vos premiers produits pour Madagascar.</p>
-                <button onClick={() => setVue('vendeur')} className="px-5 py-2 rounded-full bg-[#e02e24] hover:bg-[#c42118] text-white font-bold text-xs shadow-sm">Ouvrir ma boutique</button>
+              <section className="bg-[var(--bg-card)] rounded-3xl p-6 sm:p-8 border border-[var(--border-light)] text-center space-y-3">
+                <h2 className="text-lg font-extrabold">{BRAND} est prêt</h2>
+                <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-md mx-auto">
+                  Créez votre boutique dans l'espace vendeur et publiez vos premières annonces pour Madagascar.
+                </p>
+                <button
+                  onClick={() => setVue('vendeur')}
+                  className="px-5 py-2.5 rounded-full bg-[#ef233c] hover:bg-[#c8162c] text-white font-bold text-xs shadow-sm"
+                >
+                  Ouvrir ma boutique
+                </button>
               </section>
             ) : (
-              <div className="space-y-5">
+              <div className="space-y-8">
+                <section className="space-y-3">
+                  <div className="flex items-end justify-between pb-2.5 border-b border-[var(--border-light)]">
+                    <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight leading-none">
+                      Dernières annonces
+                    </h2>
+                    <button
+                      onClick={() => setVue('catalogue')}
+                      className="text-xs font-bold text-[#ff7b54] hover:text-[#ef233c] shrink-0"
+                    >
+                      Voir plus
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                    {nouveauxProduits.map((p) => <CarteProduit key={p.id} produit={p} />)}
+                  </div>
+                </section>
+
                 {produitsPromo.length > 0 && (
-                  <section className="bg-white rounded-2xl p-3 border border-gray-100">
-                    <div className="flex items-center justify-between mb-2.5">
+                  <section className="space-y-3">
+                    <div className="flex items-end justify-between pb-2.5 border-b border-[var(--border-light)]">
                       <div className="flex items-center gap-2">
-                        <span className="px-2 py-0.5 rounded bg-[#e02e24] text-white text-[10px] font-extrabold uppercase">Flash</span>
-                        <h2 className="text-sm font-extrabold text-gray-900">Promotions</h2>
+                        <span className="px-2 py-0.5 rounded bg-[#ef233c] text-white text-[10px] font-extrabold uppercase">Flash</span>
+                        <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">Promotions</h2>
                       </div>
-                      <button onClick={() => setVue('catalogue')} className="text-[11px] font-bold text-[#e02e24]">Tout voir ›</button>
+                      <button onClick={() => setVue('catalogue')} className="text-xs font-bold text-[#ff7b54]">
+                        Voir plus
+                      </button>
                     </div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                       {produitsPromo.slice(0, 6).map((p) => <CarteProduit key={p.id} produit={p} />)}
                     </div>
                   </section>
                 )}
-                <section className="bg-white rounded-2xl p-3 border border-gray-100">
-                  <div className="flex items-center justify-between mb-2.5">
-                    <h2 className="text-sm font-extrabold text-gray-900">Nouveaux produits</h2>
-                    <button onClick={() => setVue('catalogue')} className="text-[11px] font-bold text-[#e02e24]">Tout voir ›</button>
+
+                <section className="space-y-3">
+                  <div className="flex items-end justify-between pb-2.5 border-b border-[var(--border-light)]">
+                    <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">Meilleures ventes</h2>
+                    <button onClick={() => setVue('catalogue')} className="text-xs font-bold text-[#ff7b54]">
+                      Voir plus
+                    </button>
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
-                    {nouveauxProduits.map((p) => <CarteProduit key={p.id} produit={p} />)}
-                  </div>
-                </section>
-                <section className="bg-white rounded-2xl p-3 border border-gray-100">
-                  <div className="flex items-center justify-between mb-2.5">
-                    <h2 className="text-sm font-extrabold text-gray-900">Meilleures ventes</h2>
-                    <button onClick={() => setVue('catalogue')} className="text-[11px] font-bold text-[#e02e24]">Tout voir ›</button>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
                     {meilleuresVentes.map((p) => <CarteProduit key={p.id} produit={p} />)}
                   </div>
                 </section>
@@ -1689,17 +1876,23 @@ export default function App() {
             )}
 
             {boutiques.length > 0 && (
-              <section>
-                <h2 className="text-lg font-extrabold mb-4">Boutiques populaires</h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+              <section className="space-y-3">
+                <div className="flex items-end justify-between pb-2.5 border-b border-[var(--border-light)]">
+                  <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">Boutiques populaires</h2>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                   {boutiques.map((b) => (
-                    <div key={b.id} onClick={() => { setBoutiqueSelectionneeId(b.id); setVue('boutique'); }} className="bg-white p-3 rounded-2xl border border-gray-100 hover:border-[#e02e24]/40 cursor-pointer flex items-center gap-2.5">
-                      <div className="w-10 h-10 rounded-xl bg-[#fff1f0] overflow-hidden flex items-center justify-center shrink-0">
-                        {b.logo ? <img src={b.logo} alt="" className="w-full h-full object-cover" /> : <Store className="w-5 h-5 text-[#e02e24]" />}
+                    <div
+                      key={b.id}
+                      onClick={() => { setBoutiqueSelectionneeId(b.id); setVue('boutique'); }}
+                      className="bg-[var(--bg-card)] p-3 rounded-2xl border border-[var(--border-light)] hover:border-[#ef233c]/50 cursor-pointer flex items-center gap-2.5"
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-[var(--brand-soft)] overflow-hidden flex items-center justify-center shrink-0">
+                        {b.logo ? <img src={b.logo} alt="" className="w-full h-full object-cover" /> : <Store className="w-5 h-5 text-[#ef233c]" />}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-xs sm:text-sm text-gray-900 truncate">{b.nom}</p>
-                        <p className="text-[11px] text-gray-500 truncate">{b.ville}</p>
+                        <p className="font-bold text-xs sm:text-sm truncate">{b.nom}</p>
+                        <p className="text-[11px] text-[var(--text-muted)] truncate">{b.ville}</p>
                       </div>
                     </div>
                   ))}
@@ -1710,44 +1903,51 @@ export default function App() {
         )}
       </main>
 
-      <footer className="bg-white border-t border-gray-100 mt-10 py-6 px-4 pb-24 md:pb-6 text-xs text-gray-500">
+      {/* Bandeau défilant info marketplace en bas comme sur la capture */}
+      <div className="bg-[#f5e7a3] text-[#18181b] text-xs font-semibold py-1.5 px-3 overflow-hidden whitespace-nowrap border-t border-black/10">
+        <div className="max-w-7xl mx-auto truncate">
+          • {BRAND} Madagascar : Paiement sécurisé Orange Money, MVola, Airtel Money & livraison rapide sur Antananarivo, Mahajanga, Toamasina, Antsirabe, Fianarantsoa, Toliara et Antsiranana.
+        </div>
+      </div>
+
+      <footer className="bg-[var(--bg-surface)] border-t border-[var(--border-light)] py-6 px-4 pb-24 md:pb-6 text-xs text-[var(--text-muted)]">
         <div className="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
           <LogoMarque onClick={() => setVue('accueil')} />
-          <p>© {new Date().getFullYear()} {BRAND} — Madagascar</p>
+          <p>© {new Date().getFullYear()} {BRAND} — Marketplace Madagascar</p>
         </div>
       </footer>
 
-      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 px-2 py-1.5">
+      <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[var(--bg-surface)] border-t border-[var(--border-light)] px-2 py-1.5">
         <div className="grid grid-cols-5 items-center text-[10px] font-semibold">
           <button
             onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }}
-            className={`flex flex-col items-center py-1 ${vue === 'accueil' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+            className={`flex flex-col items-center py-1 ${vue === 'accueil' ? 'text-[#ef233c] font-extrabold' : 'text-[var(--text-muted)]'}`}
           >
             <span>Accueil</span>
           </button>
 
           <button
             onClick={() => setVue('catalogue')}
-            className={`flex flex-col items-center py-1 ${vue === 'catalogue' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+            className={`flex flex-col items-center py-1 ${vue === 'catalogue' ? 'text-[#ef233c] font-extrabold' : 'text-[var(--text-muted)]'}`}
           >
-            <span>Catalogue</span>
+            <span>Annonces</span>
           </button>
 
           <button
             onClick={() => setVue('vendeur')}
-            className={`flex flex-col items-center py-1 ${vue === 'vendeur' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+            className="flex flex-col items-center py-1"
           >
-            <span className="px-2.5 py-0.5 rounded-full bg-[#e02e24] text-white text-[10px] font-extrabold">Vendre</span>
+            <span className="px-3 py-1 rounded-full bg-[#ef233c] text-white text-[10px] font-extrabold shadow">Vendre</span>
           </button>
 
           <button
             onClick={() => setVue('panier')}
-            className={`relative flex flex-col items-center py-1 ${vue === 'panier' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+            className={`relative flex flex-col items-center py-1 ${vue === 'panier' ? 'text-[#ef233c] font-extrabold' : 'text-[var(--text-muted)]'}`}
           >
             <span className="relative inline-flex items-center justify-center">
               <span>Panier</span>
               {panier.reduce((s, i) => s + i.quantite, 0) > 0 && (
-                <span className="ml-1 px-1.5 py-0.2 rounded-full bg-[#e02e24] text-white text-[9px] font-extrabold">
+                <span className="ml-1 px-1.5 rounded-full bg-[#ef233c] text-white text-[9px] font-extrabold">
                   {panier.reduce((s, i) => s + i.quantite, 0)}
                 </span>
               )}
@@ -1756,7 +1956,7 @@ export default function App() {
 
           <button
             onClick={() => setVue(utilisateurActif ? 'client' : 'auth')}
-            className={`flex flex-col items-center py-1 ${vue === 'client' || vue === 'auth' ? 'text-[#e02e24] font-extrabold' : 'text-gray-600'}`}
+            className={`flex flex-col items-center py-1 ${vue === 'client' || vue === 'auth' ? 'text-[#ef233c] font-extrabold' : 'text-[var(--text-muted)]'}`}
           >
             <span>{utilisateurActif ? utilisateurActif.nom.split(' ')[0] : 'Compte'}</span>
           </button>
