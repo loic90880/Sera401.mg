@@ -550,7 +550,7 @@ export default function App() {
         )}
 
         {ongletVendeur === 'produits' && (
-          <div className="bg-white rounded-3xl border border-gray-100 overflow-x-auto">
+          <div className="bg-[var(--bg-card)] rounded-3xl border border-[var(--border-light)] overflow-x-auto max-w-full">
             <table className="w-full text-left text-sm">
               <thead>
                 <tr className="bg-gray-50 text-xs font-bold text-gray-600 uppercase">
@@ -932,7 +932,7 @@ export default function App() {
         )}
 
         {ongletClient === 'favoris' && (
-          <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {mesProduitsFavoris.map((p) => <CarteProduit key={p.id} produit={p} />)}
           </div>
         )}
@@ -1016,7 +1016,7 @@ export default function App() {
                 <span className="text-[11px] font-semibold text-gray-600">{produit.ventes || 0} vendu(s)</span>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pr-0.5">
                 <span className="px-2 py-0.5 rounded bg-gray-100 text-[11px] font-bold text-gray-700">{produit.categorie}</span>
                 {produit.ville && <span className="text-[11px] text-gray-500">• {produit.ville}</span>}
               </div>
@@ -1360,7 +1360,7 @@ export default function App() {
                         <span className="font-bold text-emerald-700">{b.statut || "active"}</span>
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pr-0.5">
                       <button
                         onClick={() => basculerStatutBoutique(b)}
                         className="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-800 font-bold"
@@ -1426,7 +1426,7 @@ export default function App() {
                           {u.email} • {u.ville || "Madagascar"} • Inscrit le {u.creeLe || "—"}
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pr-0.5">
                         <select
                           disabled={estAdminPrincipal}
                           value={u.role || "client"}
@@ -1458,7 +1458,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-main)] flex flex-col transition-colors">
+    <div className="min-h-screen overflow-x-clip bg-[var(--bg-page)] text-[var(--text-main)] flex flex-col transition-colors">
       {toast && (
         <div className={`fixed bottom-20 md:bottom-6 right-4 z-50 px-4 py-3 rounded-2xl shadow-2xl text-white text-xs font-bold flex items-center gap-2 ${toast.type === 'erreur' ? 'bg-red-600' : 'bg-emerald-600'}`}>
           <CheckCircle className="w-4 h-4" /> {toast.message}
@@ -1466,14 +1466,14 @@ export default function App() {
       )}
 
       <header className="bg-[var(--bg-surface)] border-b border-[var(--border-light)] sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5">
+        <div className="max-w-7xl mx-auto px-2.5 sm:px-4 py-2.5 flex items-center justify-between gap-1.5 sm:gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 min-w-0">
             <LogoMarque onClick={() => { setCategorieFiltre('Toutes'); setVue('accueil'); }} />
 
             <button
               onClick={() => setVue(vue === 'catalogue' ? 'accueil' : 'catalogue')}
               aria-label="Catalogue et catégories"
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-colors"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-[var(--text-main)] hover:bg-[var(--bg-card)] transition-colors shrink-0"
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -1481,7 +1481,7 @@ export default function App() {
             <button
               onClick={() => setRechercheOuverte((v) => !v)}
               aria-label="Rechercher"
-              className="w-9 h-9 rounded-full bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center justify-center text-[var(--text-main)] hover:border-[#ef233c]/50"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center justify-center text-[var(--text-main)] hover:border-[#ef233c]/50 shrink-0"
             >
               <Search className="w-4 h-4" />
             </button>
@@ -1489,7 +1489,7 @@ export default function App() {
             <div className="relative">
               <button
                 onClick={() => setMenuOutilsOuvert((v) => !v)}
-                className="h-9 px-3 rounded-full bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center gap-1.5 text-xs font-bold text-[var(--text-main)] hover:border-[#ef233c]/50"
+                className="h-8 sm:h-9 px-2.5 sm:px-3 rounded-full bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center gap-1 sm:gap-1.5 text-[11px] sm:text-xs font-bold text-[var(--text-main)] hover:border-[#ef233c]/50 shrink-0"
               >
                 <span className="grid grid-cols-2 gap-0.5">
                   <span className="w-1.5 h-1.5 rounded-[2px] bg-[#ef233c]" />
@@ -1532,11 +1532,11 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pr-0.5">
             <button
               onClick={() => setThemeClair((v) => !v)}
               aria-label="Changer le thème"
-              className="w-9 h-9 rounded-xl flex items-center justify-center text-[var(--text-main)] hover:bg-[var(--bg-card)]"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center text-[var(--text-main)] hover:bg-[var(--bg-card)] shrink-0"
             >
               {themeClair ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
             </button>
@@ -1544,7 +1544,7 @@ export default function App() {
             <button
               onClick={() => setVue('panier')}
               aria-label="Panier"
-              className="relative w-9 h-9 rounded-xl bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center justify-center text-[var(--text-main)]"
+              className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[var(--bg-card)] border border-[var(--border-light)] flex items-center justify-center text-[var(--text-main)] shrink-0"
             >
               <ShoppingCart className="w-4 h-4" />
               {panier.reduce((s, i) => s + i.quantite, 0) > 0 && (
@@ -1559,7 +1559,7 @@ export default function App() {
             <button
               onClick={() => setVue(utilisateurActif ? 'client' : 'auth')}
               aria-label="Compte utilisateur"
-              className="h-9 px-2.5 rounded-xl border border-[var(--border-light)] bg-[var(--bg-card)] hover:border-[#ef233c] flex items-center gap-1.5 text-xs font-bold"
+              className="h-8 sm:h-9 min-w-[36px] sm:min-w-[40px] px-2.5 rounded-xl border border-[#ef233c]/40 bg-[var(--bg-card)] hover:border-[#ef233c] flex items-center justify-center gap-1.5 text-xs font-bold shrink-0"
             >
               <User className="w-4 h-4" />
               {utilisateurActif && <span className="hidden sm:inline">{utilisateurActif.nom.split(' ')[0]}</span>}
@@ -1648,7 +1648,7 @@ export default function App() {
                           <p className="font-bold text-sm">{prod.nom}</p>
                           <p className="text-xs font-extrabold text-[var(--price-purple)]">{formatMGA(prixFinal)}</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pr-0.5">
                           <button onClick={() => setPanier((prev) => prev.map((i) => i.produitId === prod.id ? { ...i, quantite: Math.max(1, i.quantite - 1) } : i))} className="w-7 h-7 rounded bg-[var(--bg-surface)] border border-[var(--border-light)] font-bold">-</button>
                           <span className="text-xs font-bold">{item.quantite}</span>
                           <button onClick={() => setPanier((prev) => prev.map((i) => i.produitId === prod.id ? { ...i, quantite: Math.min(prod.stock, i.quantite + 1) } : i))} className="w-7 h-7 rounded bg-[var(--bg-surface)] border border-[var(--border-light)] font-bold">+</button>
@@ -1683,7 +1683,7 @@ export default function App() {
                   {produitsFiltres.length}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pr-0.5">
                 <select
                   value={villeFiltre}
                   onChange={(e) => setVilleFiltre(e.target.value)}
@@ -1847,7 +1847,7 @@ export default function App() {
                 {produitsPromo.length > 0 && (
                   <section className="space-y-3">
                     <div className="flex items-end justify-between pb-2.5 border-b border-[var(--border-light)]">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 pr-0.5">
                         <span className="px-2 py-0.5 rounded bg-[#ef233c] text-white text-[10px] font-extrabold uppercase">Flash</span>
                         <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight">Promotions</h2>
                       </div>
